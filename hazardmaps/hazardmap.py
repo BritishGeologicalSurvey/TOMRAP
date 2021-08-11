@@ -7,6 +7,17 @@ import gdal
 from shapely.geometry import Polygon
 import matplotlib.pyplot as plt
 
+
+#Import the parameters from config file
+# e.g. 
+# from config import [CONFIG SETTINGS]
+
+# OR
+
+# import config
+# config.exportfile
+# config.log etc......
+
 #contains location id and positions
 expofile = "TZA_buildings_exposure_20200224.dbf" 
 
@@ -277,197 +288,87 @@ tzeA = tzeA.assign(hmap = lambda x: 0.5*x.flood + 0.15*x.volc + 0.35*x.equ)
 # # Plots   -- -needs refactor----!
 
 plt.hist(tzeA.equ)
-
-
-# In[30]:
-
-
 tzeA.plot(column='equ', markersize=0.1, legend=True)
 # Stripey area - had to be rearranged first before plotting
-
-
-# In[31]:
-
-
 plt.hist(tzeA.volc)
-
-
-# In[32]:
-
-
 tzeA.plot(column='volc', markersize=0.1, legend=True)
-
-
-# In[33]:
-
-
 plt.hist(tzeA.flood)
-
-
-# In[34]:
-
-
 tzeA.plot(column='flood', markersize=0.1, legend=True)
 
-
-# In[ ]:
-
-
-
-
-
-# In[35]:
-
-
 np.sum(np.isnan(tzeA.volc))
-
-
-# In[36]:
-
-
 plt.hist(tzeA.hmap)
-
-
-# In[37]:
-
-
 tzeA.plot(column='hmap', markersize=0.1, legend=True)
 
-
-# In[38]:
-
-
-tzeA.columns
-
-
-# In[39]:
-
+print(tzeA.columns)
 
 tzeA.plot(column='ear', markersize=0.01, legend=True)
-
-
-# In[40]:
-
 
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='ear', markersize=0.01, legend=True)
 lims = plt.axis('equal')
 plt.show()
 
-
-# In[41]:
-
-
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(axes=ax, column='plu', markersize=0.01, legend=True)
 lims = plt.axis('equal')
 plt.show()
-
-
-# In[42]:
-
 
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='flu', markersize=0.01, legend=True)
 lims = plt.axis('equal')
 plt.show()
 
-
-# In[43]:
-
-
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='lahar', markersize=0.01, legend=True)
 lims = plt.axis('equal')
 plt.show()
-
-
-# In[44]:
-
 
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='tep', markersize=0.01, legend=True)
 lims = plt.axis('equal')
 plt.show()
 
-
-# In[45]:
-
-
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='pgaindx', markersize=0.01, legend=True)
 lims = plt.axis('equal')
 plt.show()
-
-
-# In[46]:
-
 
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='P', markersize=0.01, legend=True)
 lims = plt.axis('equal')
 plt.show()
 
-
-# In[47]:
-
-
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='FU', markersize=0.01, legend=True)
 lims = plt.axis('equal')
 plt.show()
-
-
-# In[48]:
-
 
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='lah', markersize=0.01, legend=True)
 lims = plt.axis('equal')
 plt.show()
 
-
-# In[49]:
-
-
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='pyr', markersize=0.01, legend=True)
 lims = plt.axis('equal')
 plt.show()
-
-
-# In[50]:
-
 
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='equ', markersize=0.01, legend=True)
 lims = plt.axis('equal')
 plt.show()
 
-
-# In[51]:
-
-
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='flood', markersize=0.01, legend=True)
 lims = plt.axis('equal')
 plt.show()
-
-
-# In[52]:
-
 
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='volc', markersize=0.01, legend=True)
 lims = plt.axis('equal')
 plt.show()
 
-
-# In[53]:
-
-
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='hmap', markersize=0.01, legend=True)
 lims = plt.axis('equal')
 plt.show()
-
