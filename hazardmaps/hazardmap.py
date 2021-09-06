@@ -18,26 +18,33 @@ import matplotlib.pyplot as plt
 # config.exportfile
 # config.log etc......
 
+#Then this:
+
+def main():
+    volcano_data = read_volcano_data()
+    flood_data = read_flood_data()
+
+    combined_data = combine(volcano_data, flood_data)
+
+    plot_maps(combined_data)
+
+
 #expofile = "TZA_buildings_exposure_20200224.dbf" #contains location id and positions
 
 DATADIR = "../datadir/"
 # The one above is not found in the data folder - DV added on Friday - was in the other folder
 #expofile = DATADIR + "TZA_buildings_exposure_20200731.dbf" #contains location id and positions  - present
 expofile = DATADIR + "TZA_buildings_exposure_20200224.dbf" #contains location id and positions  - present
-#exposure
-
-# exposure with breakdown
-# present
-expobfile = DATADIR + "TZA_buildings_exposure_breakdown_20200731.dbf" #contains location id and breakdown of number of each house type
+expobfile = DATADIR + "TZA_buildings_exposure_breakdown_20200731.dbf" 
+#contains location id and breakdown of number of each house type
 #volcP = ["kyejo", "meru"]
 #volcL = ["lengai", "ngozi", "rungwe"]
-# present
 volcfile = DATADIR + "World_Volcanoes_Smithsonian_Institution_GVP.shp" #point locations of volcanoes
 volcnames = ["Lengai, Ol Doinyo", "Meru", "Ngozi", "Rungwe", "Kyejo"] #names of volcanoes in Smithsonian shp
 
 # 1 in 100, 1 in 200 in the file
-floodratio = 100 #selects from different flood tifs
-floodtypes = ["FD", "FU", "P"] # no space to test P, "P"] #selects from different flood tifs
+floodratio = 100 # selects from different flood tifs
+floodtypes = ["FD", "FU", "P"]  #selects from different flood tifs
 # in the Seismic folder
 eqfile = DATADIR + "hazard_map_mean_tanzania.dbf" #contains earthquake information
 
@@ -178,7 +185,6 @@ for i in floodtypes:
     ffile = DATADIR + "%s_1in%d.tif" %(i, floodratio)   # flood file
     raster = gdal.Open(ffile)
     rasterArray = raster.ReadAsArray()
-    
     xco, yco = makecoords(raster)
     def getx(xval):
         return(np.argmax(xco[xco<xval]))
@@ -295,6 +301,8 @@ tzeA = tzeA.assign(hmap = lambda x: 0.5*x.flood + 0.15*x.volc + 0.35*x.equ)
 
 # # Plots   -- -needs refactor----!
 
+
+
 plt.hist(tzeA.equ)
 tzeA.plot(column='equ', markersize=0.1, legend=True)
 # Stripey area - had to be rearranged first before plotting
@@ -312,7 +320,16 @@ print(tzeA.columns)
 tzeA.plot(column='ear', markersize=0.01, legend=True)
 
 figname = "output_"
+plot_types = ["ear", "plu", "flu", "tep", "tep2", "pgaindx", "P", "FU", "lah", "pyr", "equ", "flood", "volc", "hmap"]
 
+for plottype in plot_types:
+	f, ax = plt.subplots(1, figsize=(8, 8))
+	ax = tzeA.plot(ax=ax, column=plottype, markersize=0.01, legend=True)
+	lims = plt.axis('equal')
+	plt.savefig(figname + plottype)
+
+
+'''
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='ear', markersize=0.01, legend=True)
 lims = plt.axis('equal')
@@ -382,3 +399,13 @@ f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='hmap', markersize=0.01, legend=True)
 lims = plt.axis('equal')
 plt.savefig(figname + 'hmap')
+'''
+
+### Maybe...
+def main():
+    volcano_data = read_volcano_data()
+    flood_data = read_flood_data()
+
+    combined_data = combine(volcano_data, flood_data)
+
+    plot_maps(combined_data)
