@@ -18,20 +18,28 @@ import matplotlib.pyplot as plt
 # config.exportfile
 # config.log etc......
 
-#contains location id and positions
-expofile = "TZA_buildings_exposure_20200224.dbf" 
+#expofile = "TZA_buildings_exposure_20200224.dbf" #contains location id and positions
+
+DATADIR = "../datadir/"
+# The one above is not found in the data folder - DV added on Friday - was in the other folder
+#expofile = DATADIR + "TZA_buildings_exposure_20200731.dbf" #contains location id and positions  - present
+expofile = DATADIR + "TZA_buildings_exposure_20200224.dbf" #contains location id and positions  - present
+#exposure
 
 # exposure with breakdown
-expobfile = "TZA_buildings_exposure_breakdown_20200731.dbf" #contains location id and breakdown of number of each house type
-# volcP = ["kyejo", "meru"]
-# volcL = ["lengai", "ngozi", "rungwe"]
-volcfile = "World_Volcanoes_Smithsonian_Institution_GVP.shp" #point locations of volcanoes
+# present
+expobfile = DATADIR + "TZA_buildings_exposure_breakdown_20200731.dbf" #contains location id and breakdown of number of each house type
+#volcP = ["kyejo", "meru"]
+#volcL = ["lengai", "ngozi", "rungwe"]
+# present
+volcfile = DATADIR + "World_Volcanoes_Smithsonian_Institution_GVP.shp" #point locations of volcanoes
 volcnames = ["Lengai, Ol Doinyo", "Meru", "Ngozi", "Rungwe", "Kyejo"] #names of volcanoes in Smithsonian shp
 
 # 1 in 100, 1 in 200 in the file
 floodratio = 100 #selects from different flood tifs
-floodtypes = ["FD", "FU", "P"] #selects from different flood tifs
-eqfile = "hazard_map_mean_tanzania.dbf" #contains earthquake information
+floodtypes = ["FD", "FU", "P"] # no space to test P, "P"] #selects from different flood tifs
+# in the Seismic folder
+eqfile = DATADIR + "hazard_map_mean_tanzania.dbf" #contains earthquake information
 
 """
 Set out imports and functions to use later
@@ -167,7 +175,7 @@ def makecoords(raster):
 
 for i in floodtypes:
     print(i)
-    ffile = "%s_1in%d.tif" %(i, floodratio)   # flood file
+    ffile = DATADIR + "%s_1in%d.tif" %(i, floodratio)   # flood file
     raster = gdal.Open(ffile)
     rasterArray = raster.ReadAsArray()
     
@@ -303,72 +311,74 @@ print(tzeA.columns)
 
 tzeA.plot(column='ear', markersize=0.01, legend=True)
 
+figname = "output_"
+
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='ear', markersize=0.01, legend=True)
 lims = plt.axis('equal')
-plt.show()
+plt.savefig(figname + 'ear')
 
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(axes=ax, column='plu', markersize=0.01, legend=True)
 lims = plt.axis('equal')
-plt.show()
+plt.savefig(figname + 'plu')
 
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='flu', markersize=0.01, legend=True)
 lims = plt.axis('equal')
-plt.show()
+plt.savefig(figname + 'flu')
 
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='lahar', markersize=0.01, legend=True)
 lims = plt.axis('equal')
-plt.show()
+plt.savefig(figname + 'tep')
 
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='tep', markersize=0.01, legend=True)
 lims = plt.axis('equal')
-plt.show()
+plt.savefig(figname + 'tep2')
 
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='pgaindx', markersize=0.01, legend=True)
 lims = plt.axis('equal')
-plt.show()
+plt.savefig(figname + 'pgaindx')
 
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='P', markersize=0.01, legend=True)
 lims = plt.axis('equal')
-plt.show()
+plt.savefig(figname + 'P')
 
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='FU', markersize=0.01, legend=True)
 lims = plt.axis('equal')
-plt.show()
+plt.savefig(figname + 'FU')
 
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='lah', markersize=0.01, legend=True)
 lims = plt.axis('equal')
-plt.show()
+plt.savefig(figname + 'lah')
 
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='pyr', markersize=0.01, legend=True)
 lims = plt.axis('equal')
-plt.show()
+plt.savefig(figname + 'pyr')
 
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='equ', markersize=0.01, legend=True)
 lims = plt.axis('equal')
-plt.show()
+plt.savefig(figname + 'equ')
 
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='flood', markersize=0.01, legend=True)
 lims = plt.axis('equal')
-plt.show()
+plt.savefig(figname + 'flood')
 
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='volc', markersize=0.01, legend=True)
 lims = plt.axis('equal')
-plt.show()
+plt.savefig(figname + 'volc')
 
 f, ax = plt.subplots(1, figsize=(8, 8))
 ax = tzeA.plot(ax=ax, column='hmap', markersize=0.01, legend=True)
 lims = plt.axis('equal')
-plt.show()
+plt.savefig(figname + 'hmap')
