@@ -7,6 +7,8 @@ import gdal
 from shapely.geometry import Polygon
 import matplotlib.pyplot as plt
 
+from matplotlib.testing.decorators import image_comparison
+
 
 #Import the parameters from config file
 # e.g. 
@@ -18,15 +20,7 @@ import matplotlib.pyplot as plt
 # config.exportfile
 # config.log etc......
 
-#Then this:
-
-def main():
-    volcano_data = read_volcano_data()
-    flood_data = read_flood_data()
-
-    combined_data = combine(volcano_data, flood_data)
-
-    plot_maps(combined_data)
+# MAIN FUNCTION IS AT BOTTOM
 
 
 #expofile = "TZA_buildings_exposure_20200224.dbf" #contains location id and positions
@@ -67,7 +61,7 @@ def getbreakdown(filename):
     return breakdwn
 
 """
-Volcano
+VOLCANO
 
 Load and combine the volcano shp files.
 
@@ -112,15 +106,15 @@ volcsP5['pyr'] = 5.
 volcsL = volcsL1.append(volcsL3).append(volcsL5) #combine all Lahar together
 volcsP = volcsP1.append(volcsP3).append(volcsP5) # combine pyro
 
-tzb = getbreakdown(expobfile)   # b - buildings/breakdown    - tz - Tanzania
-tzg = dbf_to_df(expofile)     # has geometry in it
+tz_buildings = getbreakdown(expobfile)   # b - buildings/breakdown    - tz - Tanzania
+tz_withgeometry = dbf_to_df(expofile)     # has geometry in it
 
-#tzb.to_csv("tzb_breakdown.csv")
-#tzg.to_csv("tzg.csv")
-#tz = tzb.merge(tzg.set_index("OBJECTID")["geometry"], how="left", on="OBJECTID")
+#tz_buildings.to_csv("tz_buildings_breakdown.csv")
+#tz_withgeometry.to_csv("tz_withgeometry.csv")
+#tz = tz_buildings.merge(tz_withgeometry.set_index("OBJECTID")["geometry"], how="left", on="OBJECTID")
 
 
-# Multiply building percentages with set values and sum per location, tzb must have the building type names as columns and match the building_type_tz array.  
+# Multiply building percentages with set values and sum per location, tz_buildings must have the building type names as columns and match the building_type_tz array.  
 # 
 # Combine with location id and positions to give tz.
 
@@ -143,26 +137,26 @@ building_type_tz = ['CR/LFM/HBET:1,3',
 # Could be made more general. Could be different in UK for e.g.
 
 # Weightings for each building per hazard type
-tz_pluvial = [0.32, 0.2, 0.12, 0.4, 0.25, 0.15, 0.09, 0.4, 0.25, 0.8, 0.56, 0.56, 0.56, 0.56, 0.56]
-tz_fluvial = tz_pluvial
-tz_tephra = [0.3, 0.15, 0.09, 0.4, 0.2, 0.12, 0.09, 0.5, 0.25, 0.2, 0.6, 0.6, 0.6, 0.6, 0.6]
-tz_lahar = [0.06, 0.1, 0.06, 0.6, 0.3, 0.18, 0.3, 0.4, 0.2, 1, 1, 1, 1, 1, 1]
-tz_pyro = [0.56, 0.63, 0.7, 0.64, 0.72, 0.8, 0.9, 0.72, 0.81, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8]
-tz_eq = [0.12, 0.32, 0.16, 0.18, 0.48, 0.24, 0.2, 0.09, 0.24, 0.09, 0.3, 0.3, 0.3, 0.3, 0.3]
+tz_weight_pluvial = [0.32, 0.2, 0.12, 0.4, 0.25, 0.15, 0.09, 0.4, 0.25, 0.8, 0.56, 0.56, 0.56, 0.56, 0.56]
+tz_weight_fluvial = tz_weight_pluvial
+tz_weight_tephra = [0.3, 0.15, 0.09, 0.4, 0.2, 0.12, 0.09, 0.5, 0.25, 0.2, 0.6, 0.6, 0.6, 0.6, 0.6]
+tz_weight_lahar = [0.06, 0.1, 0.06, 0.6, 0.3, 0.18, 0.3, 0.4, 0.2, 1, 1, 1, 1, 1, 1]
+tz_weight_pyro = [0.56, 0.63, 0.7, 0.64, 0.72, 0.8, 0.9, 0.72, 0.81, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8]
+tz_weight_earthquake = [0.12, 0.32, 0.16, 0.18, 0.48, 0.24, 0.2, 0.09, 0.24, 0.09, 0.3, 0.3, 0.3, 0.3, 0.3]
 
-tzb["plu"] = tzb[building_type_tz].multiply(tz_pluvial).sum(axis=1)
-tzb["flu"] = tzb[building_type_tz].multiply(tz_fluvial).sum(axis=1)
-tzb["tep"] = tzb[building_type_tz].multiply(tz_tephra).sum(axis=1) #not currently used
-tzb["lahar"] = tzb[building_type_tz].multiply(tz_lahar).sum(axis=1)
-tzb["pyro"] = tzb[building_type_tz].multiply(tz_pyro).sum(axis=1)
-tzb["eq"] = tzb[building_type_tz].multiply(tz_eq).sum(axis=1)
+tz_buildings["plu"] = tz_buildings[building_type_tz].multiply(tz_weight_pluvial).sum(axis=1)
+tz_buildings["flu"] = tz_buildings[building_type_tz].multiply(tz_weight_fluvial).sum(axis=1)
+tz_buildings["tep"] = tz_buildings[building_type_tz].multiply(tz_weight_tephra).sum(axis=1) #not currently used
+tz_buildings["lahar"] = tz_buildings[building_type_tz].multiply(tz_weight_lahar).sum(axis=1)
+tz_buildings["pyro"] = tz_buildings[building_type_tz].multiply(tz_weight_pyro).sum(axis=1)
+tz_buildings["eq"] = tz_buildings[building_type_tz].multiply(tz_weight_earthquake).sum(axis=1)
 
-tzb = tzb[["plu", "flu", "tep", "lahar", "pyro", "eq"]]
+tz_buildings = tz_buildings[["plu", "flu", "tep", "lahar", "pyro", "eq"]]
 
-tz = tzb.merge(tzg.set_index("OBJECTID")[["geometry", "POINT_X", "POINT_Y"]], how="left", on="OBJECTID")
+tz = tz_buildings.merge(tz_withgeometry.set_index("OBJECTID")[["geometry", "POINT_X", "POINT_Y"]], how="left", on="OBJECTID")
 
 """
-# # Flood
+# # FLOOD
 # 
 # Load in flood files (tifs) and convert them to coordinates of the top corners. Then assign for each location find the tif grid point that location would be in to get the flood value. This can probably be done a lot better.
 # 
@@ -177,7 +171,6 @@ def makecoords(raster):
     y_coords = y_index * y_size + upper_left_y
     
     return x_coords, y_coords
-
 
 
 for i in floodtypes:
@@ -196,15 +189,15 @@ for i in floodtypes:
         # For first flood type only - xcoA
         # doesn't have to be re run if multiple TIFFS same resolution
         xcoA, ycoA = makecoords(raster)
-        xpts = tzg.POINT_X.map(getx)
-        ypts = tzg.POINT_Y.map(gety)
+        xpts = tz_withgeometry.POINT_X.map(getx)
+        ypts = tz_withgeometry.POINT_Y.map(gety)
     else:
         if all(xco==xcoA)==False:
             print("in x false")
-            xpts = tzg.POINT_X.map(getx)
+            xpts = tz_withgeometry.POINT_X.map(getx)
         if all(yco==ycoA)==False:
             print("in y false")
-            ypts = tzg.POINT_Y.map(gety)
+            ypts = tz_withgeometry.POINT_Y.map(gety)
     
     # set out of range values to 0
     rasterArray[rasterArray==-9999.] = 0
@@ -213,7 +206,7 @@ for i in floodtypes:
     # Tanzania 
     
     # don't need building weights to work out hazard index
-    tzg = tzg.assign(fd=rasterArray[xpts, ypts]).rename(columns={'fd':i})
+    tz_withgeometry = tz_withgeometry.assign(fd=rasterArray[xpts, ypts]).rename(columns={'fd':i})
     
 ## CRS:
 """
@@ -233,7 +226,7 @@ tried to put into gdf that contained boxes of the geom - see below
 # 
 # Negative or 0 values are set to 0, values in the first quintile are set to 1, ..., values in the top quintile are set to 5.
 # 
-# Then merged into tzg, and 'flood' set to 0.5 * (fluvial building weights * fluvial index + pluvial building weights * pluvial index)
+# Then merged into tz_withgeometry, and 'flood' set to 0.5 * (fluvial building weights * fluvial index + pluvial building weights * pluvial index)
 
 def toindx(pdser):    # pdsr - pandas series
     # going from continuous to indexed version
@@ -251,156 +244,82 @@ def toindx(pdser):    # pdsr - pandas series
 #convert flood values to (0) 1-5 range
 
 for i in floodtypes:
-    tzg[i] = toindx(tzg[i])
+    tz_withgeometry[i] = toindx(tz_withgeometry[i])
 
-tzg = tzg.set_index("OBJECTID").merge(tz)
-tzg = tzg.assign(flood = lambda x: 0.5*(x.FU * x.flu + x.P * x.plu))
+tz_withgeometry = tz_withgeometry.set_index("OBJECTID").merge(tz)
+tz_withgeometry = tz_withgeometry.assign(flood = lambda x: 0.5*(x.FU * x.flu + x.P * x.plu))
 
 
 # Combine volcano index and building weights
 # 
 # volc = 0.45 * (pyro index * pyro building weights) + 0.55 * (lahar index * lahar building weights)
-tzg = gpd.sjoin(gpd.GeoDataFrame(tzg).to_crs("EPSG:4326"), volcsL, op="within", how="left").rename(columns={'index_right':'volcsL'})
-tzg = gpd.sjoin(tzg, volcsP, op="within", how="left").rename(columns={'index_right':'volcsP'})
+tz_withgeometry = gpd.sjoin(gpd.GeoDataFrame(tz_withgeometry).to_crs("EPSG:4326"), volcsL, op="within", how="left").rename(columns={'index_right':'volcsL'})
+tz_withgeometry = gpd.sjoin(tz_withgeometry, volcsP, op="within", how="left").rename(columns={'index_right':'volcsP'})
 
-tzg.loc[np.isnan(tzg.pyr), 'pyr'] = 0.
-tzg.loc[np.isnan(tzg.lah), 'lah'] = 0.
-tzg = tzg.assign(volc = lambda x: 0.45*(x.pyr * x.pyro) + 0.55*(x.lah * x.lahar))
+tz_withgeometry.loc[np.isnan(tz_withgeometry.pyr), 'pyr'] = 0.
+tz_withgeometry.loc[np.isnan(tz_withgeometry.lah), 'lah'] = 0.
+tz_withgeometry = tz_withgeometry.assign(volc = lambda x: 0.45*(x.pyr * x.pyro) + 0.55*(x.lah * x.lahar))
 
-#tzg.loc[tzg.volcsP5==0.]
+#tz_withgeometry.loc[tz_withgeometry.volcsP5==0.]
 
 
-# # Earthquake
+# # EARTHQUAKES
 # 
-# Load earthquake dbf, convert from points to raster grid, join with tzg to create tzeA
+# Load earthquake dbf, convert from points to raster grid, join with tz_withgeometry to create tz_earthquakesA
 
 # Earthquake - Tanzania
-tze = dbf_to_df(eqfile)
+tz_earthquakes = dbf_to_df(eqfile)
 
 # tr, bl, br   - top right, bottom left/right etc
-tze = gpd.GeoDataFrame(
-    tze, geometry=gpd.points_from_xy(tze.lon, tze.lat))
-tze = tze.assign(tr=tze.geometry.translate(xoff=0.045), bl=tze.geometry.translate(yoff=-0.045), br=tze.geometry.translate(xoff=0.045, yoff=-0.045))
-tze = tze.assign(poly=tze.apply(func=lambda A: Polygon([A.geometry, A.tr, A.br, A.bl]), axis=1)).drop(['geometry', 'tr', 'bl', 'br'], axis=1)
+tz_earthquakes = gpd.GeoDataFrame(
+    tz_earthquakes, geometry=gpd.points_from_xy(tz_earthquakes.lon, tz_earthquakes.lat))
+tz_earthquakes = tz_earthquakes.assign(tr=tz_earthquakes.geometry.translate(xoff=0.045), bl=tz_earthquakes.geometry.translate(yoff=-0.045), br=tz_earthquakes.geometry.translate(xoff=0.045, yoff=-0.045))
+tz_earthquakes = tz_earthquakes.assign(poly=tz_earthquakes.apply(func=lambda A: Polygon([A.geometry, A.tr, A.br, A.bl]), axis=1)).drop(['geometry', 'tr', 'bl', 'br'], axis=1)
 
 # extra one to work on
-tzeA = gpd.sjoin(tzg, tze.set_geometry(col='poly', crs=tzg.crs), op="within", how="left").rename(columns={'index_right':'tze'})
+tz_earthquakesA = gpd.sjoin(tz_withgeometry, tz_earthquakes.set_geometry(col='poly', crs=tz_withgeometry.crs), op="within", how="left").rename(columns={'index_right':'tz_earthquakes'})
 
-#tzeA.columns
+#tz_earthquakesA.columns
 # Convert PGA_0_1 to index according to quintiles as above. 
 # 
 # Construct equ = (equ indx * equ building weights)
-tzeA = tzeA.assign(pgaindx = lambda x: toindx(x.PGA_0_1))
-tzeA = tzeA.rename(columns={'eq':'ear'}).assign(equ = lambda x: x.pgaindx * x.ear)
+tz_earthquakesA = tz_earthquakesA.assign(pgaindx = lambda x: toindx(x.PGA_0_1))
+tz_earthquakesA = tz_earthquakesA.rename(columns={'eq':'ear'}).assign(equ = lambda x: x.pgaindx * x.ear)
 
-# # Combine 
+# COMBINE
 # 
 # Combine to hazard map: 0.5*flood + 0.15 * volc + 0.35 * equ
-tzeA = tzeA.assign(hmap = lambda x: 0.5*x.flood + 0.15*x.volc + 0.35*x.equ)
+tz_earthquakesA = tz_earthquakesA.assign(hmap = lambda x: 0.5*x.flood + 0.15*x.volc + 0.35*x.equ)
 
 
 # # Plots   -- -needs refactor----!
-
-
-
-plt.hist(tzeA.equ)
-tzeA.plot(column='equ', markersize=0.1, legend=True)
+plt.hist(tz_earthquakesA.equ)
+tz_earthquakesA.plot(column='equ', markersize=0.1, legend=True)
 # Stripey area - had to be rearranged first before plotting
-plt.hist(tzeA.volc)
-tzeA.plot(column='volc', markersize=0.1, legend=True)
-plt.hist(tzeA.flood)
-tzeA.plot(column='flood', markersize=0.1, legend=True)
+plt.hist(tz_earthquakesA.volc)
+tz_earthquakesA.plot(column='volc', markersize=0.1, legend=True)
+plt.hist(tz_earthquakesA.flood)
+tz_earthquakesA.plot(column='flood', markersize=0.1, legend=True)
 
-np.sum(np.isnan(tzeA.volc))
-plt.hist(tzeA.hmap)
-tzeA.plot(column='hmap', markersize=0.1, legend=True)
+np.sum(np.isnan(tz_earthquakesA.volc))
+plt.hist(tz_earthquakesA.hmap)
+tz_earthquakesA.plot(column='hmap', markersize=0.1, legend=True)
 
-print(tzeA.columns)
+print(tz_earthquakesA.columns)
 
-tzeA.plot(column='ear', markersize=0.01, legend=True)
+tz_earthquakesA.plot(column='ear', markersize=0.01, legend=True)
 
 figname = "output_"
-plot_types = ["ear", "plu", "flu", "tep", "tep2", "pgaindx", "P", "FU", "lah", "pyr", "equ", "flood", "volc", "hmap"]
+plot_types = ["ear", "plu", "flu", "tep", "lahar", "pgaindx", "P", "FU", "lah", "pyr", "equ", "flood", "volc", "hmap"]
 
 for plottype in plot_types:
 	f, ax = plt.subplots(1, figsize=(8, 8))
-	ax = tzeA.plot(ax=ax, column=plottype, markersize=0.01, legend=True)
+	ax = tz_earthquakesA.plot(ax=ax, column=plottype, markersize=0.01, legend=True)
 	lims = plt.axis('equal')
 	plt.savefig(figname + plottype)
 
 
-'''
-f, ax = plt.subplots(1, figsize=(8, 8))
-ax = tzeA.plot(ax=ax, column='ear', markersize=0.01, legend=True)
-lims = plt.axis('equal')
-plt.savefig(figname + 'ear')
-
-f, ax = plt.subplots(1, figsize=(8, 8))
-ax = tzeA.plot(axes=ax, column='plu', markersize=0.01, legend=True)
-lims = plt.axis('equal')
-plt.savefig(figname + 'plu')
-
-f, ax = plt.subplots(1, figsize=(8, 8))
-ax = tzeA.plot(ax=ax, column='flu', markersize=0.01, legend=True)
-lims = plt.axis('equal')
-plt.savefig(figname + 'flu')
-
-f, ax = plt.subplots(1, figsize=(8, 8))
-ax = tzeA.plot(ax=ax, column='lahar', markersize=0.01, legend=True)
-lims = plt.axis('equal')
-plt.savefig(figname + 'tep')
-
-f, ax = plt.subplots(1, figsize=(8, 8))
-ax = tzeA.plot(ax=ax, column='tep', markersize=0.01, legend=True)
-lims = plt.axis('equal')
-plt.savefig(figname + 'tep2')
-
-f, ax = plt.subplots(1, figsize=(8, 8))
-ax = tzeA.plot(ax=ax, column='pgaindx', markersize=0.01, legend=True)
-lims = plt.axis('equal')
-plt.savefig(figname + 'pgaindx')
-
-f, ax = plt.subplots(1, figsize=(8, 8))
-ax = tzeA.plot(ax=ax, column='P', markersize=0.01, legend=True)
-lims = plt.axis('equal')
-plt.savefig(figname + 'P')
-
-f, ax = plt.subplots(1, figsize=(8, 8))
-ax = tzeA.plot(ax=ax, column='FU', markersize=0.01, legend=True)
-lims = plt.axis('equal')
-plt.savefig(figname + 'FU')
-
-f, ax = plt.subplots(1, figsize=(8, 8))
-ax = tzeA.plot(ax=ax, column='lah', markersize=0.01, legend=True)
-lims = plt.axis('equal')
-plt.savefig(figname + 'lah')
-
-f, ax = plt.subplots(1, figsize=(8, 8))
-ax = tzeA.plot(ax=ax, column='pyr', markersize=0.01, legend=True)
-lims = plt.axis('equal')
-plt.savefig(figname + 'pyr')
-
-f, ax = plt.subplots(1, figsize=(8, 8))
-ax = tzeA.plot(ax=ax, column='equ', markersize=0.01, legend=True)
-lims = plt.axis('equal')
-plt.savefig(figname + 'equ')
-
-f, ax = plt.subplots(1, figsize=(8, 8))
-ax = tzeA.plot(ax=ax, column='flood', markersize=0.01, legend=True)
-lims = plt.axis('equal')
-plt.savefig(figname + 'flood')
-
-f, ax = plt.subplots(1, figsize=(8, 8))
-ax = tzeA.plot(ax=ax, column='volc', markersize=0.01, legend=True)
-lims = plt.axis('equal')
-plt.savefig(figname + 'volc')
-
-f, ax = plt.subplots(1, figsize=(8, 8))
-ax = tzeA.plot(ax=ax, column='hmap', markersize=0.01, legend=True)
-lims = plt.axis('equal')
-plt.savefig(figname + 'hmap')
-'''
-
+# PROTOYPE REFACTOR
 ### Maybe...
 def main():
     volcano_data = read_volcano_data()
@@ -409,3 +328,11 @@ def main():
     combined_data = combine(volcano_data, flood_data)
 
     plot_maps(combined_data)
+
+
+## Example stub of testing - put in separate file
+@image_comparison(baseline_images=['line_dashes'], remove_text=True,
+                  extensions=['png'])
+def test_line_dashes():
+    fig, ax = plt.subplots()
+    ax.plot(range(10), linestyle=(0, (3, 3)), lw=5)
