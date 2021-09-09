@@ -9,20 +9,7 @@ import matplotlib.pyplot as plt
 
 from matplotlib.testing.decorators import image_comparison
 
-
-#Import the parameters from config file
-# e.g. 
-# from config import [CONFIG SETTINGS]
-
-# OR
-
-# import config
-# config.exportfile
-# config.log etc......
-
-# MAIN FUNCTION IS AT BOTTOM
-
-
+import config as config
 #exposure_file = "TZA_buildings_exposure_20200224.dbf" #contains location id and positions
 
 DATADIR = "../datadir/"
@@ -66,6 +53,38 @@ def getbreakdown(filename):
     breakdwn = breakdwn.divide(breakdwn['SUM'], axis=0).drop('SUM', axis=1)
     return breakdwn
 
+
+# This may need conversion to crs?
+def makecoords(raster):
+    (xlen, ylen) = (raster.RasterXSize, raster.RasterYSize)
+    (upper_left_x, x_size, x_rotation, upper_left_y, y_rotation, y_size) = raster.GetGeoTransform()
+    x_index = np.arange(0,xlen)
+    y_index = np.arange(0,ylen)
+    x_coords = x_index * x_size + upper_left_x
+    y_coords = y_index * y_size + upper_left_y
+    
+    return x_coords, y_coords
+
+
+def to_bdy(gdf):
+    gdfg = gdf.geometry.unary_union   # geo df geometry
+    return gpd.GeoDataFrame(geometry=[gdfg], crs=gdf.crs)
+
+
+def toindx(pdser):    
+    # pdsr - pandas series
+    # going from continuous to indexed version
+    # take values and index them to 1-5 according to quartiles, leave 0s as is
+    # quartiles/boxes - qs
+    qs = [-np.inf, 0,
+          pdser[pdser>0.].quantile(0.2),
+          pdser[pdser>0.].quantile(0.4),
+          pdser[pdser>0.].quantile(0.6),
+          pdser[pdser>0.].quantile(0.8),
+          pdser[pdser>0.].quantile(1)]
+    indx = [0,1,2,3,4,5]
+    return pd.to_numeric(pd.cut(pdser, bins=qs, labels=indx))
+
 """
 VOLCANO
 
@@ -74,12 +93,8 @@ Load and combine the volcano shp files.
 pyroclastic: set to 5 if under 15km from volcano centre, 3 if 15-30km, 1 if 30-50km
 lahar: set to 5 if under 50km from volcano centre, 3 if 50-100km, 1 if 100-200km
 """
-
 volcs = gpd.read_file(volcfile)
 volcs = volcs[volcs.Volc_Name.isin(volcnames)]
-def to_bdy(gdf):
-    gdfg = gdf.geometry.unary_union   # geo df geometry
-    return gpd.GeoDataFrame(geometry=[gdfg], crs=gdf.crs)
 
 # generate circles with buffer to get each radius, then take difference for each assignment
 # pyroclastic
@@ -101,7 +116,6 @@ volcsL1 = gpd.overlay(volcsL1, volcsL3, how='difference')
 volcsL3 = gpd.overlay(volcsL3, volcsL5, how='difference')
 
 #volcsL = gpd.GeoDataFrame(volcsL1, volcsL3, volcsL5)
-
 volcsL1['lah'] = 1. #set values before combining
 volcsL3['lah'] = 3.
 volcsL5['lah'] = 5.
@@ -112,18 +126,19 @@ volcsP5['pyr'] = 5.
 volcsL = volcsL1.append(volcsL3).append(volcsL5) #combine all Lahar together
 volcsP = volcsP1.append(volcsP3).append(volcsP5) # combine pyro
 
+"""
+BUILDINGS EXPOSURE
+"""
 tz_buildings = getbreakdown(exposure_breakdown_file)   # b - buildings/breakdown    - tz - Tanzania
 tz_withgeometry = dbf_to_df(exposure_file)     # has geometry in it
 
-#tz_buildings.to_csv("tz_buildings_breakdown.csv")
-#tz_withgeometry.to_csv("tz_withgeometry.csv")
-#tz = tz_buildings.merge(tz_withgeometry.set_index("OBJECTID")["geometry"], how="left", on="OBJECTID")
-
+# tz_buildings.to_csv("tz_buildings_breakdown.csv")
+# tz_withgeometry.to_csv("tz_withgeometry.csv")
+# tz = tz_buildings.merge(tz_withgeometry.set_index("OBJECTID")["geometry"], how="left", on="OBJECTID")
 
 # Multiply building percentages with set values and sum per location, tz_buildings must have the building type names as columns and match the building_type_tz array.  
 # 
 # Combine with location id and positions to give tz.
-
 building_type_tz = ['CR/LFM/HBET:1,3',
                     'CR/LFM/HBET:4,7',
                     'CR/LFM/HBET:8,20',
@@ -161,24 +176,13 @@ tz_buildings = tz_buildings[["plu", "flu", "tep", "lahar", "pyro", "eq"]]
 
 tz = tz_buildings.merge(tz_withgeometry.set_index("OBJECTID")[["geometry", "POINT_X", "POINT_Y"]], how="left", on="OBJECTID")
 
+
 """
 # # FLOOD
 # 
 # Load in flood files (tifs) and convert them to coordinates of the top corners. Then assign for each location find the tif grid point that location would be in to get the flood value. This can probably be done a lot better.
 # 
-# This may need conversion to crs?
 """
-def makecoords(raster):
-    (xlen, ylen) = (raster.RasterXSize, raster.RasterYSize)
-    (upper_left_x, x_size, x_rotation, upper_left_y, y_rotation, y_size) = raster.GetGeoTransform()
-    x_index = np.arange(0,xlen)
-    y_index = np.arange(0,ylen)
-    x_coords = x_index * x_size + upper_left_x
-    y_coords = y_index * y_size + upper_left_y
-    
-    return x_coords, y_coords
-
-
 for i in floodtypes:
     print(i)
     ffile = DATADIR + "%s_1in%d.tif" %(i, floodratio)   # flood file
@@ -211,7 +215,6 @@ for i in floodtypes:
     rasterArray[rasterArray==999.] = 0
     
     # Tanzania 
-    
     # don't need building weights to work out hazard index
     tz_withgeometry = tz_withgeometry.assign(fd=rasterArray[xpts, ypts]).rename(columns={'fd':i})
     
@@ -225,28 +228,13 @@ tried to put into gdf that contained boxes of the geom - see below
 """
 
 # getting x and y can be computationally expensive, so if rasters have same coords can speed up
-
-
 # Convert the flood values to an index based on the distribution of the values.
-# 
 # Out of range -9999. and 999. were set to 0 above. Values of 0 or below are not included when calculating quartiles.
-# 
 # Negative or 0 values are set to 0, values in the first quintile are set to 1, ..., values in the top quintile are set to 5.
-# 
-# Then merged into tz_withgeometry, and 'flood' set to 0.5 * (fluvial building weights * fluvial index + pluvial building weights * pluvial index)
+# Then merged into tz_withgeometry, and 'flood' set to
+# 0.5 * (fluvial building weights * fluvial index + pluvial building weights * pluvial index)
 
-def toindx(pdser):    # pdsr - pandas series
-    # going from continuous to indexed version
-    # take values and index them to 1-5 according to quartiles, leave 0s as is
-    # quartiles/boxes - qs
-    qs = [-np.inf, 0,
-          pdser[pdser>0.].quantile(0.2),
-          pdser[pdser>0.].quantile(0.4),
-          pdser[pdser>0.].quantile(0.6),
-          pdser[pdser>0.].quantile(0.8),
-          pdser[pdser>0.].quantile(1)]
-    indx = [0,1,2,3,4,5]
-    return pd.to_numeric(pd.cut(pdser, bins=qs, labels=indx))
+# See to_indx() function
 
 #convert flood values to (0) 1-5 range
 print("Converting flood values to 1-5 range...")
@@ -277,9 +265,7 @@ tz_withgeometry = tz_withgeometry.assign(volc = lambda x: 0.45*(x.pyr * x.pyro) 
 
 
 # # EARTHQUAKES
-# 
 # Load earthquake dbf, convert from points to raster grid, join with tz_withgeometry to create tz_earthquakesA
-
 # Earthquake - Tanzania
 print("EARTHQUAKES")
 tz_earthquakes = dbf_to_df(eearthquake_file)
@@ -295,8 +281,7 @@ tz_earthquakes = tz_earthquakes.assign(poly=tz_earthquakes.apply(func=lambda A: 
 tz_earthquakesA = gpd.sjoin(tz_withgeometry, tz_earthquakes.set_geometry(col='poly', crs=tz_withgeometry.crs), op="within", how="left").rename(columns={'index_right':'tz_earthquakes'})
 
 #tz_earthquakesA.columns
-# Convert PGA_0_1 to index according to quintiles as above. 
-# 
+# Convert PGA_0_1 to index according to quintiles as above.
 # Construct equ = (equ indx * equ building weights)
 tz_earthquakesA = tz_earthquakesA.assign(pgaindx = lambda x: toindx(x.PGA_0_1))
 tz_earthquakesA = tz_earthquakesA.rename(columns={'eq':'ear'}).assign(equ = lambda x: x.pgaindx * x.ear)
@@ -308,7 +293,7 @@ print("Combine all to make hmap collum")
 tz_earthquakesA = tz_earthquakesA.assign(hmap = lambda x: 0.5*x.flood + 0.15*x.volc + 0.35*x.equ)
 
 
-# # Plots   -- -needs refactor----!
+# # Plots of Histograms  -- -needs refactor----!
 plt.hist(tz_earthquakesA.equ)
 tz_earthquakesA.plot(column='equ', markersize=0.1, legend=True)
 # Stripey area - had to be rearranged first before plotting
@@ -322,7 +307,6 @@ plt.hist(tz_earthquakesA.hmap)
 tz_earthquakesA.plot(column='hmap', markersize=0.1, legend=True)
 
 print(tz_earthquakesA.columns)
-
 tz_earthquakesA.plot(column='ear', markersize=0.01, legend=True)
 
 
