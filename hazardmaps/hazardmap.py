@@ -23,13 +23,13 @@ from matplotlib.testing.decorators import image_comparison
 # MAIN FUNCTION IS AT BOTTOM
 
 
-#expofile = "TZA_buildings_exposure_20200224.dbf" #contains location id and positions
+#exposure_file = "TZA_buildings_exposure_20200224.dbf" #contains location id and positions
 
 DATADIR = "../datadir/"
 # The one above is not found in the data folder - DV added on Friday - was in the other folder
-#expofile = DATADIR + "TZA_buildings_exposure_20200731.dbf" #contains location id and positions  - present
-expofile = DATADIR + "TZA_buildings_exposure_20200224.dbf" #contains location id and positions  - present
-expobfile = DATADIR + "TZA_buildings_exposure_breakdown_20200731.dbf" 
+#exposure_file = DATADIR + "TZA_buildings_exposure_20200731.dbf" #contains location id and positions  - present
+exposure_file = DATADIR + "TZA_buildings_exposure_20200224.dbf" #contains location id and positions  - present
+exposure_breakdown_file = DATADIR + "TZA_buildings_exposure_breakdown_20200731.dbf" 
 #contains location id and breakdown of number of each house type
 #volcP = ["kyejo", "meru"]
 #volcL = ["lengai", "ngozi", "rungwe"]
@@ -40,7 +40,7 @@ volcnames = ["Lengai, Ol Doinyo", "Meru", "Ngozi", "Rungwe", "Kyejo"] #names of 
 floodratio = 100 # selects from different flood tifs
 floodtypes = ["FD", "FU", "P"]  #selects from different flood tifs
 # in the Seismic folder
-eqfile = DATADIR + "hazard_map_mean_tanzania.dbf" #contains earthquake information
+eearthquake_file = DATADIR + "hazard_map_mean_tanzania.dbf" #contains earthquake information
 
 """
 Set out imports and functions to use later
@@ -106,8 +106,8 @@ volcsP5['pyr'] = 5.
 volcsL = volcsL1.append(volcsL3).append(volcsL5) #combine all Lahar together
 volcsP = volcsP1.append(volcsP3).append(volcsP5) # combine pyro
 
-tz_buildings = getbreakdown(expobfile)   # b - buildings/breakdown    - tz - Tanzania
-tz_withgeometry = dbf_to_df(expofile)     # has geometry in it
+tz_buildings = getbreakdown(exposure_breakdown_file)   # b - buildings/breakdown    - tz - Tanzania
+tz_withgeometry = dbf_to_df(exposure_file)     # has geometry in it
 
 #tz_buildings.to_csv("tz_buildings_breakdown.csv")
 #tz_withgeometry.to_csv("tz_withgeometry.csv")
@@ -268,7 +268,7 @@ tz_withgeometry = tz_withgeometry.assign(volc = lambda x: 0.45*(x.pyr * x.pyro) 
 # Load earthquake dbf, convert from points to raster grid, join with tz_withgeometry to create tz_earthquakesA
 
 # Earthquake - Tanzania
-tz_earthquakes = dbf_to_df(eqfile)
+tz_earthquakes = dbf_to_df(eearthquake_file)
 
 # tr, bl, br   - top right, bottom left/right etc
 tz_earthquakes = gpd.GeoDataFrame(
