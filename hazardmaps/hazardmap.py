@@ -42,6 +42,12 @@ floodtypes = ["FD", "FU", "P"]  #selects from different flood tifs
 # in the Seismic folder
 eearthquake_file = DATADIR + "hazard_map_mean_tanzania.dbf" #contains earthquake information
 
+figname = "output_"
+plot_types = ["ear", "plu", "flu", "tep", "lahar", "pgaindx", "P", "FU", "lah", "pyr", "equ", "flood", "volc", "hmap"]
+# OVERWRITE QUICK TEST
+plot_types = "hmap"
+
+
 """
 Set out imports and functions to use later
 *dbf_to_df* reads a dbf file, and converts it to a pandas dataframe
@@ -176,6 +182,7 @@ def makecoords(raster):
 for i in floodtypes:
     print(i)
     ffile = DATADIR + "%s_1in%d.tif" %(i, floodratio)   # flood file
+    print("FLOOD FILE: ", ffile)
     raster = gdal.Open(ffile)
     rasterArray = raster.ReadAsArray()
     xco, yco = makecoords(raster)
@@ -242,22 +249,28 @@ def toindx(pdser):    # pdsr - pandas series
     return pd.to_numeric(pd.cut(pdser, bins=qs, labels=indx))
 
 #convert flood values to (0) 1-5 range
-
+print("Converting flood values to 1-5 range...")
 for i in floodtypes:
+    print("Converting flood type ", i)
     tz_withgeometry[i] = toindx(tz_withgeometry[i])
 
+print("Setting geometry index from OBJECTID")
 tz_withgeometry = tz_withgeometry.set_index("OBJECTID").merge(tz)
+print("Setting flood column from lambda function")
 tz_withgeometry = tz_withgeometry.assign(flood = lambda x: 0.5*(x.FU * x.flu + x.P * x.plu))
 
 
 # Combine volcano index and building weights
 # 
 # volc = 0.45 * (pyro index * pyro building weights) + 0.55 * (lahar index * lahar building weights)
+print("Combine volcano index and building weights")
 tz_withgeometry = gpd.sjoin(gpd.GeoDataFrame(tz_withgeometry).to_crs("EPSG:4326"), volcsL, op="within", how="left").rename(columns={'index_right':'volcsL'})
 tz_withgeometry = gpd.sjoin(tz_withgeometry, volcsP, op="within", how="left").rename(columns={'index_right':'volcsP'})
 
 tz_withgeometry.loc[np.isnan(tz_withgeometry.pyr), 'pyr'] = 0.
 tz_withgeometry.loc[np.isnan(tz_withgeometry.lah), 'lah'] = 0.
+
+print("Setting volc column from assign lamnbda function")
 tz_withgeometry = tz_withgeometry.assign(volc = lambda x: 0.45*(x.pyr * x.pyro) + 0.55*(x.lah * x.lahar))
 
 #tz_withgeometry.loc[tz_withgeometry.volcsP5==0.]
@@ -268,9 +281,11 @@ tz_withgeometry = tz_withgeometry.assign(volc = lambda x: 0.45*(x.pyr * x.pyro) 
 # Load earthquake dbf, convert from points to raster grid, join with tz_withgeometry to create tz_earthquakesA
 
 # Earthquake - Tanzania
+print("EARTHQUAKES")
 tz_earthquakes = dbf_to_df(eearthquake_file)
 
 # tr, bl, br   - top right, bottom left/right etc
+print("Create geometry from points")
 tz_earthquakes = gpd.GeoDataFrame(
     tz_earthquakes, geometry=gpd.points_from_xy(tz_earthquakes.lon, tz_earthquakes.lat))
 tz_earthquakes = tz_earthquakes.assign(tr=tz_earthquakes.geometry.translate(xoff=0.045), bl=tz_earthquakes.geometry.translate(yoff=-0.045), br=tz_earthquakes.geometry.translate(xoff=0.045, yoff=-0.045))
@@ -289,6 +304,7 @@ tz_earthquakesA = tz_earthquakesA.rename(columns={'eq':'ear'}).assign(equ = lamb
 # COMBINE
 # 
 # Combine to hazard map: 0.5*flood + 0.15 * volc + 0.35 * equ
+print("Combine all to make hmap collum")
 tz_earthquakesA = tz_earthquakesA.assign(hmap = lambda x: 0.5*x.flood + 0.15*x.volc + 0.35*x.equ)
 
 
@@ -309,15 +325,32 @@ print(tz_earthquakesA.columns)
 
 tz_earthquakesA.plot(column='ear', markersize=0.01, legend=True)
 
-figname = "output_"
-plot_types = ["ear", "plu", "flu", "tep", "lahar", "pgaindx", "P", "FU", "lah", "pyr", "equ", "flood", "volc", "hmap"]
 
-for plottype in plot_types:
-	f, ax = plt.subplots(1, figsize=(8, 8))
-	ax = tz_earthquakesA.plot(ax=ax, column=plottype, markersize=0.01, legend=True)
-	lims = plt.axis('equal')
-	plt.savefig(figname + plottype)
 
+def plot_maps(plots_list, figure_prefix):
+    print("PLOTTING")
+    plot = plots_list
+    if plot is None:
+        print("No plots requested in config. None will be drawn.")
+
+    elif isinstance(plot, list):
+        print("Plotting sequentially...")
+        for plottype in plot:
+            print("Printing plot: ", plottype)
+            f, ax = plt.subplots(1, figsize=(8, 8))
+            ax = tz_earthquakesA.plot(ax=ax, column=plottype, markersize=0.01, legend=True)
+            lims = plt.axis('equal')
+            plt.savefig(figname + plottype)
+
+    elif isinstance(plot, str):
+            print("Printing single plot: ", plot)
+            f, ax = plt.subplots(1, figsize=(8, 8))
+            ax = tz_earthquakesA.plot(ax=ax, column=plot, markersize=0.01, legend=True)
+            lims = plt.axis('equal')
+            plt.savefig(figname + plot)
+
+# plot_types is usually a list of strings from the config
+plot_maps(plot_types, figname)
 
 # PROTOYPE REFACTOR
 ### Maybe...
@@ -330,9 +363,3 @@ def main():
     plot_maps(combined_data)
 
 
-## Example stub of testing - put in separate file
-@image_comparison(baseline_images=['line_dashes'], remove_text=True,
-                  extensions=['png'])
-def test_line_dashes():
-    fig, ax = plt.subplots()
-    ax.plot(range(10), linestyle=(0, (3, 3)), lw=5)
