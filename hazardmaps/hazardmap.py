@@ -266,7 +266,7 @@ def flood_data(floodratio, floodtypes, tz, tz_withgeometry):
     return tz_withgeometry
 
 
-def combine_volcano_buildings(tz_withgeometry, volcsL, volcsP)
+def combine_volcano_buildings(tz_withgeometry, volcsL, volcsP):
     # Combine volcano index and building weights
     # 
     print("Combine volcano index and building weights")
@@ -315,7 +315,7 @@ def hazards_combined(tz_earthquakes):
 
     return tz_earthquakesA
 
-def plot_histograms(tz_earthquakesA)
+def plot_histograms(tz_earthquakesA):
     # # Plots of Histograms  -- -needs refactor----!
     plt.hist(tz_earthquakesA.equ)
     tz_earthquakesA.plot(column='equ', markersize=0.1, legend=True)
@@ -360,7 +360,7 @@ def plot_maps(plots_list, figure_prefix, tz_earthquakesA):
 
 # PROTOYPE REFACTOR
 def main():
-    volcano_lahar, volcano_pyro = read_volcano_data()
+    volcano_lahar, volcano_pyro = read_volcano_data(volcfile, volcnames)
     tz, tz_withgeometry = buildings(exposure_file, exposure_breakdown_file)  # tz needs a rename...
 
     """The current approach is to keep updating the geopandas 
