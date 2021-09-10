@@ -29,7 +29,7 @@ floodtypes = ["FD", "FU", "P"]  #selects from different flood tifs
 # in the Seismic folder
 eearthquake_file = DATADIR + "hazard_map_mean_tanzania.dbf" #contains earthquake information
 
-figname = "output_"
+figure_prefix = "output_"
 plot_types = ["ear", "plu", "flu", "tep", "lahar", "pgaindx", "P", "FU", "lah", "pyr", "equ", "flood", "volc", "hmap"]
 # OVERWRITE QUICK TEST
 plot_types = "hmap"
@@ -284,7 +284,7 @@ def combine_volcano_buildings(tz_withgeometry, volcsL, volcsP):
 # # EARTHQUAKES
 # Load earthquake dbf, convert from points to raster grid, join with tz_withgeometry to create tz_earthquakesA
 # Earthquake - Tanzania
-def combine_earthquake_data(eearthquake_file):
+def earthquake_data(eearthquake_file):
     print("EARTHQUAKES")
     tz_earthquakes = dbf_to_df(eearthquake_file)
 
@@ -297,7 +297,7 @@ def combine_earthquake_data(eearthquake_file):
 
     return tz_earthquakes
 
-def hazards_combined(tz_earthquakes):
+def hazards_combined(tz_earthquakes, tz_withgeometry):
     # extra one to work on
     tz_earthquakesA = gpd.sjoin(tz_withgeometry, tz_earthquakes.set_geometry(col='poly', crs=tz_withgeometry.crs), op="within", how="left").rename(columns={'index_right':'tz_earthquakes'})
 
@@ -347,14 +347,14 @@ def plot_maps(plots_list, figure_prefix, tz_earthquakesA):
             f, ax = plt.subplots(1, figsize=(8, 8))
             ax = tz_earthquakesA.plot(ax=ax, column=plottype, markersize=0.01, legend=True)
             lims = plt.axis('equal')
-            plt.savefig(figname + plottype)
+            plt.savefig(figure_prefix + plottype)
 
     elif isinstance(plot, str):
             print("Printing single plot: ", plot)
             f, ax = plt.subplots(1, figsize=(8, 8))
             ax = tz_earthquakesA.plot(ax=ax, column=plot, markersize=0.01, legend=True)
             lims = plt.axis('equal')
-            plt.savefig(figname + plot)
+            plt.savefig(figure_prefix + plot)
 
 # plot_types is usually a list of strings from the config
 
@@ -368,15 +368,20 @@ def main():
     the previous geodataframe from last time, incrementally building
     up the final hazard map dataframe
     """
-    # These all have side effects on the geodataframe passed in  
-    tz_withgeometry = flood_data(floodratio, floodtypes, tz, tz_withgeometry)   # returns tz_withgeometry again!
-    tz_withgeometry = combine_volcano_buildings(flood_data, volcsL, volcsP)   # as above - flood_data is the tz_geometry
-    tz_earthquakes = combine_earthquake_data(eearthquake_file)  # as above
+    # These all have side effects on the geodataframe passed in:
 
-    combined_data = hazards_combined(tz_earthquakes)
+    # Add flood dat to the buildings
+    tz_withgeometry_withflood = flood_data(floodratio, floodtypes, tz, tz_withgeometry)   # returns tz_withgeometry again!
+    # Add volcano data to the buildingss+flood
+    tz_withgeometry_withflood_withvolcano = combine_volcano_buildings(tz_withgeometry_withflood, volcano_lahar, volcano_pyro)   # as above - flood_data is the tz_geometry
+    # Calculate earthquake data (couldn't this go above to be more logical?)
+    tz_earthquakes = earthquake_data(eearthquake_file)  # as above - but this one only generates earthquake data
+
+    # Add earthquae data to the buildings+flood+volcano data
+    combined_data = hazards_combined(tz_earthquakes, tz_withgeometry_withflood_withvolcano)
 
     plot_histograms(combined_data)   # - this should not have side effects on the combined_data gpd
-    plot_maps(plots_list, figure_prefix, combined_data)   # same as above - no side effects please!
+    plot_maps(plot_types, figure_prefix, combined_data)   # same as above - no side effects please!
 
 
 if __name__=="__main__":
