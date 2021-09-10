@@ -377,3 +377,7 @@ def main():
 
     plot_histograms(combined_data)   # - this should not have side effects on the combined_data gpd
     plot_maps(plots_list, figure_prefix, combined_data)   # same as above - no side effects please!
+
+
+if __name__=="__main__":
+    main()
