@@ -93,38 +93,45 @@ Load and combine the volcano shp files.
 pyroclastic: set to 5 if under 15km from volcano centre, 3 if 15-30km, 1 if 30-50km
 lahar: set to 5 if under 50km from volcano centre, 3 if 50-100km, 1 if 100-200km
 """
-volcs = gpd.read_file(volcfile)
-volcs = volcs[volcs.Volc_Name.isin(volcnames)]
+def read_volcano_data(volcfile):
+    """
+    Returns two geopandas data frames , volcsL and volcsP, lahar and pyroclastic
+    """
 
-# generate circles with buffer to get each radius, then take difference for each assignment
-# pyroclastic
-# Indexes - get set later on - how close to volcano
-volcsP5 = to_bdy(volcs.to_crs("EPSG:32634").buffer(15000).to_crs("EPSG:4326"))    # Highest hazard - closest 
-volcsP3 = to_bdy(volcs.to_crs("EPSG:32634").buffer(30000).to_crs("EPSG:4326"))
-volcsP1 = to_bdy(volcs.to_crs("EPSG:32634").buffer(50000).to_crs("EPSG:4326"))
+    volcs = gpd.read_file(volcfile)
+    volcs = volcs[volcs.Volc_Name.isin(volcnames)]
 
-#P1 is 50km circle WITHOUT 30km circle
-volcsP1 = gpd.overlay(volcsP1, volcsP3, how='difference')  
-volcsP3 = gpd.overlay(volcsP3, volcsP5, how='difference') 
+    # generate circles with buffer to get each radius, then take difference for each assignment
+    # pyroclastic
+    # Indexes - get set later on - how close to volcano
+    volcsP5 = to_bdy(volcs.to_crs("EPSG:32634").buffer(15000).to_crs("EPSG:4326"))    # Highest hazard - closest 
+    volcsP3 = to_bdy(volcs.to_crs("EPSG:32634").buffer(30000).to_crs("EPSG:4326"))
+    volcsP1 = to_bdy(volcs.to_crs("EPSG:32634").buffer(50000).to_crs("EPSG:4326"))
 
-#lahar
-volcsL5 = to_bdy(volcs.to_crs("EPSG:32634").buffer(50000).to_crs("EPSG:4326"))
-volcsL3 = to_bdy(volcs.to_crs("EPSG:32634").buffer(100000).to_crs("EPSG:4326"))
-volcsL1 = to_bdy(volcs.to_crs("EPSG:32634").buffer(200000).to_crs("EPSG:4326"))
+    #P1 is 50km circle WITHOUT 30km circle
+    volcsP1 = gpd.overlay(volcsP1, volcsP3, how='difference')  
+    volcsP3 = gpd.overlay(volcsP3, volcsP5, how='difference') 
 
-volcsL1 = gpd.overlay(volcsL1, volcsL3, how='difference')
-volcsL3 = gpd.overlay(volcsL3, volcsL5, how='difference')
+    #lahar
+    volcsL5 = to_bdy(volcs.to_crs("EPSG:32634").buffer(50000).to_crs("EPSG:4326"))
+    volcsL3 = to_bdy(volcs.to_crs("EPSG:32634").buffer(100000).to_crs("EPSG:4326"))
+    volcsL1 = to_bdy(volcs.to_crs("EPSG:32634").buffer(200000).to_crs("EPSG:4326"))
 
-#volcsL = gpd.GeoDataFrame(volcsL1, volcsL3, volcsL5)
-volcsL1['lah'] = 1. #set values before combining
-volcsL3['lah'] = 3.
-volcsL5['lah'] = 5.
-volcsP1['pyr'] = 1.
-volcsP3['pyr'] = 3.
-volcsP5['pyr'] = 5.
+    volcsL1 = gpd.overlay(volcsL1, volcsL3, how='difference')
+    volcsL3 = gpd.overlay(volcsL3, volcsL5, how='difference')
 
-volcsL = volcsL1.append(volcsL3).append(volcsL5) #combine all Lahar together
-volcsP = volcsP1.append(volcsP3).append(volcsP5) # combine pyro
+    #volcsL = gpd.GeoDataFrame(volcsL1, volcsL3, volcsL5)
+    volcsL1['lah'] = 1. #set values before combining
+    volcsL3['lah'] = 3.
+    volcsL5['lah'] = 5.
+    volcsP1['pyr'] = 1.
+    volcsP3['pyr'] = 3.
+    volcsP5['pyr'] = 5.
+
+    volcsL = volcsL1.append(volcsL3).append(volcsL5) # combine all Lahar together
+    volcsP = volcsP1.append(volcsP3).append(volcsP5) # combine pyro
+
+    return volcsL, volcsP
 
 """
 BUILDINGS EXPOSURE
@@ -339,7 +346,7 @@ plot_maps(plot_types, figname)
 # PROTOYPE REFACTOR
 ### Maybe...
 def main():
-    volcano_data = read_volcano_data()
+    volcano_lahar, volcano_pyro = read_volcano_data()
     flood_data = read_flood_data()
 
     combined_data = combine(volcano_data, flood_data)
