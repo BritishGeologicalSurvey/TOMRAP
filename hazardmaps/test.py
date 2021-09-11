@@ -1,5 +1,8 @@
 import pytest
 import matplotlib.pyplot as plt
+import hazardmap as hazmap
+
+from config import volcfile, volcnames, exposure_file, exposure_breakdown_file, floodratio, floodtypes, eearthquake_file
 
 @pytest.mark.mpl_image_compare
 def test_succeeds():
@@ -9,8 +12,22 @@ def test_succeeds():
     return fig
 
 
-"""
-To run the full test suite, you need to run the data ingest 
-script, and then call the plot_() function on the images
-you want to check (it will take a while)
-"""
+# This is a long-running test as it essential runs the whole script against
+# the full Tanzania dataset.
+@pytest.mark.mpl_image_compare
+def test_hazard_map_regression():
+    # Call the main function here to get the image gpd
+    print("Generating regression test data...this may take a while")
+    volcano_lahar, volcano_pyro = read_volcano_data(volcfile, volcnames)
+    tz, tz_withgeometry = buildings(exposure_file, exposure_breakdown_file)  # tz needs a rename...
+    tz_withgeometry_withflood = flood_data(floodratio, floodtypes, tz, tz_withgeometry)   # returns tz_withgeometry again!
+    tz_withgeometry_withflood_withvolcano = combine_volcano_buildings(tz_withgeometry_withflood, volcano_lahar, volcano_pyro)   # as above - flood_data is the tz_geometry
+    tz_earthquakes = earthquake_data(eearthquake_file)  # as above - but this one only generates earthquake data
+    combined_data = hazards_combined(tz_earthquakes, tz_withgeometry_withflood_withvolcano)
+
+    print("Printing single hmap plot:")
+    f, ax = plt.subplots(1, figsize=(8, 8))
+    ax = combined_data.plot(ax=ax, column="hmap", markersize=0.01, legend=True)
+    lims = plt.axis('equal')
+    plt.savefig("regression_test_hmap.png")
+    return f  # Test function must return the figure to work wth decorator
