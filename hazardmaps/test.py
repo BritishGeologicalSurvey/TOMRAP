@@ -1,4 +1,5 @@
 import pytest
+import numpy as np
 import matplotlib.pyplot as plt
 import hazardmap as hazmap
 
@@ -18,12 +19,14 @@ def test_succeeds():
 def test_hazard_map_regression():
     # Call the main function here to get the image gpd
     print("Generating regression test data...this may take a while")
-    volcano_lahar, volcano_pyro = read_volcano_data(volcfile, volcnames)
-    tz, tz_withgeometry = buildings(exposure_file, exposure_breakdown_file)  # tz needs a rename...
-    tz_withgeometry_withflood = flood_data(floodratio, floodtypes, tz, tz_withgeometry)   # returns tz_withgeometry again!
-    tz_withgeometry_withflood_withvolcano = combine_volcano_buildings(tz_withgeometry_withflood, volcano_lahar, volcano_pyro)   # as above - flood_data is the tz_geometry
-    tz_earthquakes = earthquake_data(eearthquake_file)  # as above - but this one only generates earthquake data
-    combined_data = hazards_combined(tz_earthquakes, tz_withgeometry_withflood_withvolcano)
+    volcano_lahar, volcano_pyro = hazmap.read_volcano_data(volcfile, volcnames)
+    tz, tz_withgeometry = hazmap.buildings(exposure_file, exposure_breakdown_file)  # tz needs a rename...
+    tz_withgeometry_withflood = hazmap.flood_data(floodratio, floodtypes, tz, tz_withgeometry)   # returns tz_withgeometry again!
+    tz_withgeometry_withflood_withvolcano = hazmap.combine_volcano_buildings(tz_withgeometry_withflood, volcano_lahar, volcano_pyro)   # as above - flood_data is the tz_geometry
+    tz_earthquakes = hazmap.earthquake_data(eearthquake_file)  # as above - but this one only generates earthquake data
+    combined_data = hazmap.hazards_combined(tz_earthquakes, tz_withgeometry_withflood_withvolcano)
+
+    np.sum(np.isnan(combined_data.volc))
 
     print("Printing single hmap plot:")
     f, ax = plt.subplots(1, figsize=(8, 8))

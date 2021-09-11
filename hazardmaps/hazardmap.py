@@ -317,6 +317,7 @@ def hazards_combined(tz_earthquakes, tz_withgeometry):
 
 def plot_histograms(tz_earthquakesA):
     # # Plots of Histograms  -- -needs refactor----!
+
     plt.hist(tz_earthquakesA.equ)
     tz_earthquakesA.plot(column='equ', markersize=0.1, legend=True)
     # Stripey area - had to be rearranged first before plotting
@@ -325,7 +326,7 @@ def plot_histograms(tz_earthquakesA):
     plt.hist(tz_earthquakesA.flood)
     tz_earthquakesA.plot(column='flood', markersize=0.1, legend=True)
 
-    np.sum(np.isnan(tz_earthquakesA.volc))
+    np.sum(np.isnan(tz_earthquakesA.volc))   # This might be important! (explains the iffy plots?) If so it should be removed from here.
     plt.hist(tz_earthquakesA.hmap)
     tz_earthquakesA.plot(column='hmap', markersize=0.1, legend=True)
 
