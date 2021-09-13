@@ -5,13 +5,13 @@ import hazardmap as hazmap
 
 from config import volcfile, volcnames, exposure_file, exposure_breakdown_file, floodratio, floodtypes, eearthquake_file
 
+
 @pytest.mark.mpl_image_compare
 def test_succeeds():
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)
     ax.plot([1,2,3], linestyle='-')
     return fig
-
 
 # This is a long-running test as it essential runs the whole script against
 # the full Tanzania dataset.
@@ -29,8 +29,13 @@ def test_hazard_map_regression():
     np.sum(np.isnan(combined_data.volc))
 
     print("Printing single hmap plot:")
-    f, ax = plt.subplots(1, figsize=(8, 8))
-    ax = combined_data.plot(ax=ax, column="hmap", markersize=0.01, legend=True)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1)
+    ax = combined_data.plot(ax=ax, column="hmap", markersize=0.01, legend=True)   # Problemm calling from pandas?
+    plt.savefig("regression_test_hmap_step1.png")
     lims = plt.axis('equal')
-    plt.savefig("regression_test_hmap.png")
-    return f  # Test function must return the figure to work wth decorator
+    plt.savefig("regression_test_hmap_step2.png")
+    return fig  # Test function must return the figure to work wth decorator
+
+    
