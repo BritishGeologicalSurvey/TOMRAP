@@ -8,7 +8,7 @@ test:
   stage: test
   before_script:
   script:
-    - conda env create -f environment.yml --name hazmap
+    - conda create -f environment.yml --name hazmap
     - conda init bash
     - source ~/.bashrc
     - conda activate hazmap
