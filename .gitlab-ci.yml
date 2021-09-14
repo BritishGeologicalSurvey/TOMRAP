@@ -1,0 +1,18 @@
+stages:
+  - test
+
+test:
+  tags:
+    - docker
+  image: continuumio/miniconda:4.7.10
+  stage: test
+  before_script:
+  script:
+    - conda env create -f environment.yml --name hazmap
+    - conda init bash
+    - source ~/.bashrc
+    - conda activate hazmap
+    - cd hazardmap
+    - echo $PWD
+    - pytest --mpl -vvs test.py 
+ 
