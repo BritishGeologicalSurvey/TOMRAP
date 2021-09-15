@@ -10,48 +10,6 @@ import matplotlib.pyplot as plt
 from matplotlib.testing.decorators import image_comparison
 
 import config as config
-#exposure_file = "TZA_buildings_exposure_20200224.dbf" #contains location id and positions
-
-DATADIR = "../datadir/"
-# The one above is not found in the data folder - DV added on Friday - was in the other folder
-#exposure_file = DATADIR + "TZA_buildings_exposure_20200731.dbf" #contains location id and positions  - present
-exposure_file = DATADIR + "TZA_buildings_exposure_20200224.dbf" #contains location id and positions  - present
-exposure_breakdown_file = DATADIR + "TZA_buildings_exposure_breakdown_20200731.dbf" 
-#contains location id and breakdown of number of each house type
-#volcP = ["kyejo", "meru"]
-#volcL = ["lengai", "ngozi", "rungwe"]
-volcfile = DATADIR + "World_Volcanoes_Smithsonian_Institution_GVP.shp" #point locations of volcanoes
-volcnames = ["Lengai, Ol Doinyo", "Meru", "Ngozi", "Rungwe", "Kyejo"] #names of volcanoes in Smithsonian shp
-
-# 1 in 100, 1 in 200 in the file
-floodratio = 100 # selects from different flood tifs
-floodtypes = ["FD", "FU", "P"]  #selects from different flood tifs
-# in the Seismic folder
-eearthquake_file = DATADIR + "hazard_map_mean_tanzania.dbf" #contains earthquake information
-
-figure_prefix = "output_"
-plot_types = ["ear", "plu", "flu", "tep", "lahar", "pgaindx", "P", "FU", "lah", "pyr", "equ", "flood", "volc", "hmap"]
-# OVERWRITE QUICK TEST
-plot_types = "hmap"
-
-building_type_tz = ['CR/LFM/HBET:1,3',
-                    'CR/LFM/HBET:4,7',
-                    'CR/LFM/HBET:8,20',
-                    'CR/LFINF+DNO/HBET:1,3',
-                    'CR/LFINF+DNO/HBET:4,7', 
-                    'CR/LFINF+DNO/HBET:8,20',
-                    'S',                     
-                    'MUR+CB99/HBET:1,3',
-                    'MUR+CB99/HBET:4,7',
-                    'W',
-                    'MATO/LN', 
-                    'MUR+ADO/HBET:1,3',
-                    'MUR+CL99', 
-                    'MUR+STRUB',
-                     'W+WWD']
-# Numbers could be no. of floors
-# Could be made more general. Could be different in UK for e.g.
-
 
 """
 Set out imports and functions to use later
@@ -114,14 +72,14 @@ lahar: set to 5 if under 50km from volcano centre, 3 if 50-100km, 1 if 100-200km
 def read_volcano_data(volcfile, volcnames):
     """
     Arguments: 
-        volcfile: name of the volcano file input data
-        volcnames: list of strings of volcano names in the shapefile
+        config.volcfile: name of the volcano file input data
+        config.volcnames: list of strings of volcano names in the shapefile
 
     Returns two geopandas data frames , volcsL and volcsP, lahar and pyroclastic
     """
 
-    volcs = gpd.read_file(volcfile)
-    volcs = volcs[volcs.Volc_Name.isin(volcnames)]
+    volcs = gpd.read_file(config.volcfile)
+    volcs = volcs[volcs.Volc_Name.isin(config.volcnames)]
 
     # generate circles with buffer to get each radius, then take difference for each assignment
     # pyroclastic
@@ -159,14 +117,14 @@ def read_volcano_data(volcfile, volcnames):
 BUILDINGS EXPOSURE
 """
 def buildings(exposure_file, exposure_breakdown_file):
-    tz_buildings = getbreakdown(exposure_breakdown_file)   # b - buildings/breakdown    - tz - Tanzania
-    tz_withgeometry = dbf_to_df(exposure_file)     # has geometry in it
+    tz_buildings = getbreakdown(config.exposure_breakdown_file)   # b - buildings/breakdown    - tz - Tanzania
+    tz_withgeometry = dbf_to_df(config.exposure_file)     # has geometry in it
 
     # tz_buildings.to_csv("tz_buildings_breakdown.csv")
     # tz_withgeometry.to_csv("tz_withgeometry.csv")
     # tz = tz_buildings.merge(tz_withgeometry.set_index("OBJECTID")["geometry"], how="left", on="OBJECTID")
 
-    # Multiply building percentages with set values and sum per location, tz_buildings must have the building type names as columns and match the building_type_tz array.  
+    # Multiply building percentages with set values and sum per location, tz_buildings must have the building type names as columns and match the config.building_type_tz array.  
     # 
     # Combine with location id and positions to give tz.
 
@@ -179,12 +137,12 @@ def buildings(exposure_file, exposure_breakdown_file):
     tz_weight_pyro = [0.56, 0.63, 0.7, 0.64, 0.72, 0.8, 0.9, 0.72, 0.81, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8]
     tz_weight_earthquake = [0.12, 0.32, 0.16, 0.18, 0.48, 0.24, 0.2, 0.09, 0.24, 0.09, 0.3, 0.3, 0.3, 0.3, 0.3]
 
-    tz_buildings["plu"] = tz_buildings[building_type_tz].multiply(tz_weight_pluvial).sum(axis=1)
-    tz_buildings["flu"] = tz_buildings[building_type_tz].multiply(tz_weight_fluvial).sum(axis=1)
-    tz_buildings["tep"] = tz_buildings[building_type_tz].multiply(tz_weight_tephra).sum(axis=1) #not currently used
-    tz_buildings["lahar"] = tz_buildings[building_type_tz].multiply(tz_weight_lahar).sum(axis=1)
-    tz_buildings["pyro"] = tz_buildings[building_type_tz].multiply(tz_weight_pyro).sum(axis=1)
-    tz_buildings["eq"] = tz_buildings[building_type_tz].multiply(tz_weight_earthquake).sum(axis=1)
+    tz_buildings["plu"] = tz_buildings[config.building_type_tz].multiply(tz_weight_pluvial).sum(axis=1)
+    tz_buildings["flu"] = tz_buildings[config.building_type_tz].multiply(tz_weight_fluvial).sum(axis=1)
+    tz_buildings["tep"] = tz_buildings[config.building_type_tz].multiply(tz_weight_tephra).sum(axis=1) #not currently used
+    tz_buildings["lahar"] = tz_buildings[config.building_type_tz].multiply(tz_weight_lahar).sum(axis=1)
+    tz_buildings["pyro"] = tz_buildings[config.building_type_tz].multiply(tz_weight_pyro).sum(axis=1)
+    tz_buildings["eq"] = tz_buildings[config.building_type_tz].multiply(tz_weight_earthquake).sum(axis=1)
 
     tz_buildings = tz_buildings[["plu", "flu", "tep", "lahar", "pyro", "eq"]]
 
@@ -200,9 +158,9 @@ def buildings(exposure_file, exposure_breakdown_file):
 # 
 """
 def flood_data(floodratio, floodtypes, tz, tz_withgeometry):
-    for i in floodtypes:
+    for i in config.floodtypes:
         print(i)
-        ffile = DATADIR + "%s_1in%d.tif" %(i, floodratio)   # flood file
+        ffile = config.DATADIR + "%s_1in%d.tif" %(i, config.floodratio)   # flood file
         print("FLOOD FILE: ", ffile)
         raster = gdal.Open(ffile)
         rasterArray = raster.ReadAsArray()
@@ -212,7 +170,7 @@ def flood_data(floodratio, floodtypes, tz, tz_withgeometry):
         # nb x and y values go in different directions
         def gety(yval):
             return(np.argmin(yco[yco>yval]))
-        if i==floodtypes[0]:
+        if i==config.floodtypes[0]:
             # For first flood type only - xcoA
             # doesn't have to be re run if multiple TIFFS same resolution
             xcoA, ycoA = makecoords(raster)
@@ -254,7 +212,7 @@ def flood_data(floodratio, floodtypes, tz, tz_withgeometry):
 
     #convert flood values to (0) 1-5 range
     print("Converting flood values to 1-5 range...")
-    for i in floodtypes:
+    for i in config.floodtypes:
         print("Converting flood type ", i)
         tz_withgeometry[i] = toindx(tz_withgeometry[i])
 
@@ -286,7 +244,7 @@ def combine_volcano_buildings(tz_withgeometry, volcsL, volcsP):
 # Earthquake - Tanzania
 def earthquake_data(eearthquake_file):
     print("EARTHQUAKES")
-    tz_earthquakes = dbf_to_df(eearthquake_file)
+    tz_earthquakes = dbf_to_df(config.eearthquake_file)
 
     # tr, bl, br   - top right, bottom left/right etc
     print("Create geometry from points")
@@ -348,21 +306,21 @@ def plot_maps(plots_list, figure_prefix, tz_earthquakesA):
             f, ax = plt.subplots(1, figsize=(8, 8))
             ax = tz_earthquakesA.plot(ax=ax, column=plottype, markersize=0.01, legend=True)
             lims = plt.axis('equal')
-            plt.savefig(figure_prefix + plottype)
+            plt.savefig(config.figure_prefix + plottype)
 
     elif isinstance(plot, str):
             print("Printing single plot: ", plot)
             f, ax = plt.subplots(1, figsize=(8, 8))
             ax = tz_earthquakesA.plot(ax=ax, column=plot, markersize=0.01, legend=True)
             lims = plt.axis('equal')
-            plt.savefig(figure_prefix + plot)
+            plt.savefig(config.figure_prefix + plot)
 
-# plot_types is usually a list of strings from the config
+# config.plot_types is usually a list of strings from the config
 
 # PROTOYPE REFACTOR
 def main():
-    volcano_lahar, volcano_pyro = read_volcano_data(volcfile, volcnames)
-    tz, tz_withgeometry = buildings(exposure_file, exposure_breakdown_file)  # tz needs a rename...
+    volcano_lahar, volcano_pyro = read_volcano_data(config.volcfile, config.volcnames)
+    tz, tz_withgeometry = buildings(config.exposure_file, config.exposure_breakdown_file)  # tz needs a rename...
 
     """The current approach is to keep updating the geopandas 
     dataframe with the extra data each function call, passing back in
@@ -372,17 +330,17 @@ def main():
     # These all have side effects on the geodataframe passed in:
 
     # Add flood dat to the buildings
-    tz_withgeometry_withflood = flood_data(floodratio, floodtypes, tz, tz_withgeometry)   # returns tz_withgeometry again!
+    tz_withgeometry_withflood = flood_data(config.floodratio, config.floodtypes, tz, tz_withgeometry)   # returns tz_withgeometry again!
     # Add volcano data to the buildingss+flood
     tz_withgeometry_withflood_withvolcano = combine_volcano_buildings(tz_withgeometry_withflood, volcano_lahar, volcano_pyro)   # as above - flood_data is the tz_geometry
     # Calculate earthquake data (couldn't this go above to be more logical?)
-    tz_earthquakes = earthquake_data(eearthquake_file)  # as above - but this one only generates earthquake data
+    tz_earthquakes = earthquake_data(config.eearthquake_file)  # as above - but this one only generates earthquake data
 
     # Add earthquae data to the buildings+flood+volcano data
     combined_data = hazards_combined(tz_earthquakes, tz_withgeometry_withflood_withvolcano)
 
     plot_histograms(combined_data)   # - this should not have side effects on the combined_data gpd
-    plot_maps(plot_types, figure_prefix, combined_data)   # same as above - no side effects please!
+    plot_maps(config.plot_types, config.figure_prefix, combined_data)   # same as above - no side effects please!
 
 
 if __name__=="__main__":
