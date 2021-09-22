@@ -3,7 +3,7 @@
 import geopandas as gpd
 import pandas as pd
 import numpy as np
-import gdal
+from osgeo import gdal
 from shapely.geometry import Polygon
 import matplotlib.pyplot as plt
 
