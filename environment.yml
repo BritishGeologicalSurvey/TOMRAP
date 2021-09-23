@@ -47,7 +47,7 @@ dependencies:
   - lerc=2.2.1
   - libblas=3.9.0
   - libcblas=3.9.0
-  - libcurl=7.79.0
+  - libcurl-static=7.79.0
   - libdap4=3.20.6
   - libdeflate=1.7
   - libedit=3.1.20191231
