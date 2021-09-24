@@ -16,7 +16,7 @@ def test_succeeds():
 
 # This is a long-running test as it essential runs the whole script against
 # the full Tanzania dataset.
-@pytest.mark.skipif(os.getenv["GITLAB_CI"] is not None, reason="cannot run this test on CI server due to data requirement")
+@pytest.mark.skipif(os.getenv(["GITLAB_CI"]) is not None, reason="cannot run this test on CI server due to data requirement")
 @pytest.mark.mpl_image_compare
 def test_hazard_map_regression():
     # Call the main function here to get the image gpd
