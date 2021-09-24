@@ -4,7 +4,7 @@ stages:
 test:
   tags:
     - docker
-  image: continuumio/miniconda:4.7.10
+  image: continuumio/miniconda3:4.10.3 
   stage: test
   before_script:
   script:
