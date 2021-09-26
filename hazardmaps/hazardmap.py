@@ -1,4 +1,4 @@
-# Tanzania hazard map
+# hazardmap.py
 # This script takes different shape inputs and combines them to create a hazard vulnerability map.
 import geopandas as gpd
 import pandas as pd
@@ -6,17 +6,9 @@ import numpy as np
 from osgeo import gdal
 from shapely.geometry import Polygon
 import matplotlib.pyplot as plt
-
 from matplotlib.testing.decorators import image_comparison
-
 import config as config
 
-"""
-Set out imports and functions to use later
-*dbf_to_df* reads a dbf file, and converts it to a pandas dataframe
-*getbreakdown* does dbf_to_df, then selects the OBJECTID, CONTYPE, 
-and TOT_CNT columns to create a table where the columns are the CONTYPE (building type), and the values in the table are the counts. (If there are two values for an OBJECTID-CONTYPE pair then the maximum is used, missing values are filled with 0s.) Row sums are calculated, then divided so that the total of each row is 1, so values are proportions of each building type per location.
-"""
 
 def dbf_to_df(filename):
     return pd.DataFrame(gpd.read_file(filename))
@@ -48,10 +40,10 @@ def to_bdy(gdf):
 
 
 def toindx(pdser):    
-    # pdsr - pandas series
-    # going from continuous to indexed version
-    # take values and index them to 1-5 according to quartiles, leave 0s as is
-    # quartiles/boxes - qs
+    """
+    going from continuous to indexed version
+    take values and index them to 1-5 according to quartiles, leave 0s as is
+    """
     qs = [-np.inf, 0,
           pdser[pdser>0.].quantile(0.2),
           pdser[pdser>0.].quantile(0.4),
@@ -71,36 +63,39 @@ lahar: set to 5 if under 50km from volcano centre, 3 if 50-100km, 1 if 100-200km
 """
 def read_volcano_data(volcfile, volcnames):
     """
+    Reads in the Volcano hazard data and generates hazard 'circles' around points.
+
     Arguments: 
         config.volcfile: name of the volcano file input data
         config.volcnames: list of strings of volcano names in the shapefile
 
-    Returns two geopandas data frames , volcsL and volcsP, lahar and pyroclastic
+    Returns: 
+        two geopandas data frames , volcsL and volcsP, (lahar and pyroclastic)
     """
-
     volcs = gpd.read_file(config.volcfile)
     volcs = volcs[volcs.Volc_Name.isin(config.volcnames)]
 
-    # generate circles with buffer to get each radius, then take difference for each assignment
-    # pyroclastic
+    # Generate circles with buffer to get each radius, then take difference for each assignment
+    # P - Pyroclastic
     # Indexes - get set later on - how close to volcano
-    volcsP5 = to_bdy(volcs.to_crs("EPSG:32634").buffer(15000).to_crs("EPSG:4326"))    # Highest hazard - closest 
+    # The highest hazards are closest
+    volcsP5 = to_bdy(volcs.to_crs("EPSG:32634").buffer(15000).to_crs("EPSG:4326"))  
     volcsP3 = to_bdy(volcs.to_crs("EPSG:32634").buffer(30000).to_crs("EPSG:4326"))
     volcsP1 = to_bdy(volcs.to_crs("EPSG:32634").buffer(50000).to_crs("EPSG:4326"))
 
-    #P1 is 50km circle WITHOUT 30km circle
+    # P1 is 50km circle WITHOUT 30km circle
     volcsP1 = gpd.overlay(volcsP1, volcsP3, how='difference')  
     volcsP3 = gpd.overlay(volcsP3, volcsP5, how='difference') 
 
-    #lahar
+    # As above, but for lahars
     volcsL5 = to_bdy(volcs.to_crs("EPSG:32634").buffer(50000).to_crs("EPSG:4326"))
     volcsL3 = to_bdy(volcs.to_crs("EPSG:32634").buffer(100000).to_crs("EPSG:4326"))
     volcsL1 = to_bdy(volcs.to_crs("EPSG:32634").buffer(200000).to_crs("EPSG:4326"))
-
+    # Again, we want the circles without the inner circles (so rings, effectively)
     volcsL1 = gpd.overlay(volcsL1, volcsL3, how='difference')
     volcsL3 = gpd.overlay(volcsL3, volcsL5, how='difference')
 
-    #volcsL = gpd.GeoDataFrame(volcsL1, volcsL3, volcsL5)
+
     volcsL1['lah'] = 1. #set values before combining
     volcsL3['lah'] = 3.
     volcsL5['lah'] = 5.
@@ -108,7 +103,7 @@ def read_volcano_data(volcfile, volcnames):
     volcsP3['pyr'] = 3.
     volcsP5['pyr'] = 5.
 
-    volcsL = volcsL1.append(volcsL3).append(volcsL5) # combine all Lahar together
+    volcsL = volcsL1.append(volcsL3).append(volcsL5)  # combine all Lahar together
     volcsP = volcsP1.append(volcsP3).append(volcsP5) # combine pyro
 
     return volcsL, volcsP
@@ -117,19 +112,17 @@ def read_volcano_data(volcfile, volcnames):
 BUILDINGS EXPOSURE
 """
 def buildings(exposure_file, exposure_breakdown_file):
-    tz_buildings = getbreakdown(config.exposure_breakdown_file)   # b - buildings/breakdown    - tz - Tanzania
-    tz_withgeometry = dbf_to_df(config.exposure_file)     # has geometry in it
+    """
+    Load the building data and convert to have geometry
+    """
+    tz_buildings = getbreakdown(config.exposure_breakdown_file)
+    tz_withgeometry = dbf_to_df(config.exposure_file)
 
-    # tz_buildings.to_csv("tz_buildings_breakdown.csv")
-    # tz_withgeometry.to_csv("tz_withgeometry.csv")
-    # tz = tz_buildings.merge(tz_withgeometry.set_index("OBJECTID")["geometry"], how="left", on="OBJECTID")
-
-    # Multiply building percentages with set values and sum per location, tz_buildings must have the building type names as columns and match the config.building_type_tz array.  
-    # 
+    # Multiply building percentages with set values and sum per location,
+    # tz_buildings must have the building type names as columns and match the config.building_type_tz array.  
     # Combine with location id and positions to give tz.
-
-
     # Weightings for each building per hazard type
+
     tz_weight_pluvial = [0.32, 0.2, 0.12, 0.4, 0.25, 0.15, 0.09, 0.4, 0.25, 0.8, 0.56, 0.56, 0.56, 0.56, 0.56]
     tz_weight_fluvial = tz_weight_pluvial
     tz_weight_tephra = [0.3, 0.15, 0.09, 0.4, 0.2, 0.12, 0.09, 0.5, 0.25, 0.2, 0.6, 0.6, 0.6, 0.6, 0.6]
@@ -139,7 +132,7 @@ def buildings(exposure_file, exposure_breakdown_file):
 
     tz_buildings["plu"] = tz_buildings[config.building_type_tz].multiply(tz_weight_pluvial).sum(axis=1)
     tz_buildings["flu"] = tz_buildings[config.building_type_tz].multiply(tz_weight_fluvial).sum(axis=1)
-    tz_buildings["tep"] = tz_buildings[config.building_type_tz].multiply(tz_weight_tephra).sum(axis=1) #not currently used
+    tz_buildings["tep"] = tz_buildings[config.building_type_tz].multiply(tz_weight_tephra).sum(axis=1)  #n ot currently used
     tz_buildings["lahar"] = tz_buildings[config.building_type_tz].multiply(tz_weight_lahar).sum(axis=1)
     tz_buildings["pyro"] = tz_buildings[config.building_type_tz].multiply(tz_weight_pyro).sum(axis=1)
     tz_buildings["eq"] = tz_buildings[config.building_type_tz].multiply(tz_weight_earthquake).sum(axis=1)
@@ -148,16 +141,17 @@ def buildings(exposure_file, exposure_breakdown_file):
 
     tz = tz_buildings.merge(tz_withgeometry.set_index("OBJECTID")[["geometry", "POINT_X", "POINT_Y"]], how="left", on="OBJECTID")
 
-    return tz, tz_withgeometry # With geom gets used in the flood function later, you need both
+    return tz, tz_withgeometry  # With geom gets used in the flood function later, so you need both
 
 
-"""
-# # FLOOD
-# 
-# Load in flood files (tifs) and convert them to coordinates of the top corners. Then assign for each location find the tif grid point that location would be in to get the flood value. This can probably be done a lot better.
-# 
-"""
 def flood_data(floodratio, floodtypes, tz, tz_withgeometry):
+    """ 
+    FLOOD DATA
+
+    Load in flood files (tifs) and convert them to coordinates of the top corners. 
+    Then assign for each location find the tif grid point that location would 
+    be in to get the flood value. This can probably be done a lot better.
+    """
     for i in config.floodtypes:
         print(i)
         ffile = config.DATADIR + "%s_1in%d.tif" %(i, config.floodratio)   # flood file
@@ -192,25 +186,7 @@ def flood_data(floodratio, floodtypes, tz, tz_withgeometry):
         # don't need building weights to work out hazard index
         tz_withgeometry = tz_withgeometry.assign(fd=rasterArray[xpts, ypts]).rename(columns={'fd':i})
         
-    ## CRS:
-    """
-    Not sure about crs for this -  not enough info other than to use lat/lon
-
-    have a look in to this
-
-    tried to put into gdf that contained boxes of the geom - see below
-    """
-
-    # getting x and y can be computationally expensive, so if rasters have same coords can speed up
-    # Convert the flood values to an index based on the distribution of the values.
-    # Out of range -9999. and 999. were set to 0 above. Values of 0 or below are not included when calculating quartiles.
-    # Negative or 0 values are set to 0, values in the first quintile are set to 1, ..., values in the top quintile are set to 5.
-    # Then merged into tz_withgeometry, and 'flood' set to
-    # 0.5 * (fluvial building weights * fluvial index + pluvial building weights * pluvial index)
-
-    # See to_indx() function
-
-    #convert flood values to (0) 1-5 range
+    # convert flood values to (0) 1-5 range
     print("Converting flood values to 1-5 range...")
     for i in config.floodtypes:
         print("Converting flood type ", i)
@@ -223,10 +199,26 @@ def flood_data(floodratio, floodtypes, tz, tz_withgeometry):
 
     return tz_withgeometry
 
+    """
+    CRS Notes
+
+    Not sure about crs for this -  not enough info other than to use lat/lon
+    Tried to put into gdf that contained boxes of the geometry - see below
+
+    - getting x and y can be computationally expensive, so if rasters have same coords can speed up
+    - Convert the flood values to an index based on the distribution of the values.
+    - Out of range -9999. and 999. were set to 0 above. Values of 0 or below are not included when calculating quartiles.
+    - Negative or 0 values are set to 0, values in the first quintile are set to 1, ..., values in the top quintile are set to 5.
+    - Then merged into tz_withgeometry, and 'flood' set to
+    - 0.5 * (fluvial building weights * fluvial index + pluvial building weights * pluvial index)
+      (See to_indx() function)
+    """
+
 
 def combine_volcano_buildings(tz_withgeometry, volcsL, volcsP):
-    # Combine volcano index and building weights
-    # 
+    """
+    Combine volcano index and building weights
+    """
     print("Combine volcano index and building weights")
     tz_withgeometry = gpd.sjoin(gpd.GeoDataFrame(tz_withgeometry).to_crs("EPSG:4326"), volcsL, op="within", how="left").rename(columns={'index_right':'volcsL'})
     tz_withgeometry = gpd.sjoin(tz_withgeometry, volcsP, op="within", how="left").rename(columns={'index_right':'volcsP'})
@@ -239,10 +231,14 @@ def combine_volcano_buildings(tz_withgeometry, volcsL, volcsP):
 
     return tz_withgeometry
 
-# # EARTHQUAKES
-# Load earthquake dbf, convert from points to raster grid, join with tz_withgeometry to create tz_earthquakesA
-# Earthquake - Tanzania
+
 def earthquake_data(eearthquake_file):
+    """
+    EARTHQUAKES
+
+    Load earthquake database, convert from points to raster grid, 
+    join with tz_withgeometry to create tz_earthquakesA
+    """
     print("EARTHQUAKES")
     tz_earthquakes = dbf_to_df(config.eearthquake_file)
 
@@ -255,18 +251,17 @@ def earthquake_data(eearthquake_file):
 
     return tz_earthquakes
 
+
 def hazards_combined(tz_earthquakes, tz_withgeometry):
-    # extra one to work on
+    # This ought to be renamed really, but we create an extra dataframe to do the work on here
     tz_earthquakesA = gpd.sjoin(tz_withgeometry, tz_earthquakes.set_geometry(col='poly', crs=tz_withgeometry.crs), op="within", how="left").rename(columns={'index_right':'tz_earthquakes'})
 
-    #tz_earthquakesA.columns
     # Convert PGA_0_1 to index according to quintiles as above.
     # Construct equ = (equ indx * equ building weights)
     tz_earthquakesA = tz_earthquakesA.assign(pgaindx = lambda x: toindx(x.PGA_0_1))
     tz_earthquakesA = tz_earthquakesA.rename(columns={'eq':'ear'}).assign(equ = lambda x: x.pgaindx * x.ear)
 
     # COMBINE
-    # 
     # Combine to hazard map: 0.5*flood + 0.15 * volc + 0.35 * equ
     print("Combine all to make hmap collum")
     tz_earthquakesA = tz_earthquakesA.assign(hmap = lambda x: 0.5*x.flood + 0.15*x.volc + 0.35*x.equ)
@@ -274,7 +269,7 @@ def hazards_combined(tz_earthquakes, tz_withgeometry):
     return tz_earthquakesA
 
 def plot_histograms(tz_earthquakesA):
-    # # Plots of Histograms  -- -needs refactor----!
+    # Plots of Histograms  -- -needs refactor----!
 
     plt.hist(tz_earthquakesA.equ)
     tz_earthquakesA.plot(column='equ', markersize=0.1, legend=True)
@@ -284,13 +279,12 @@ def plot_histograms(tz_earthquakesA):
     plt.hist(tz_earthquakesA.flood)
     tz_earthquakesA.plot(column='flood', markersize=0.1, legend=True)
 
-    np.sum(np.isnan(tz_earthquakesA.volc))   # This might be important! (explains the iffy plots?) If so it should be removed from here.
+    np.sum(np.isnan(tz_earthquakesA.volc))
     plt.hist(tz_earthquakesA.hmap)
     tz_earthquakesA.plot(column='hmap', markersize=0.1, legend=True)
 
     print(tz_earthquakesA.columns)
     tz_earthquakesA.plot(column='ear', markersize=0.01, legend=True)
-
 
 
 def plot_maps(plots_list, figure_prefix, tz_earthquakesA):
@@ -315,27 +309,28 @@ def plot_maps(plots_list, figure_prefix, tz_earthquakesA):
             lims = plt.axis('equal')
             plt.savefig(config.figure_prefix + plot)
 
-# config.plot_types is usually a list of strings from the config
 
-# PROTOYPE REFACTOR
 def main():
-    volcano_lahar, volcano_pyro = read_volcano_data(config.volcfile, config.volcnames)
-    tz, tz_withgeometry = buildings(config.exposure_file, config.exposure_breakdown_file)  # tz needs a rename...
-
     """The current approach is to keep updating the geopandas 
     dataframe with the extra data each function call, passing back in
     the previous geodataframe from last time, incrementally building
     up the final hazard map dataframe
-    """
-    # These all have side effects on the geodataframe passed in:
 
-    # Add flood dat to the buildings
+    These all have side effects on the geodataframe passed in - eventually we might 
+    want to refactor this to be a class with data members etc,
+    """
+    volcano_lahar, volcano_pyro = read_volcano_data(config.volcfile, config.volcnames)
+    tz, tz_withgeometry = buildings(config.exposure_file, config.exposure_breakdown_file)  # tz needs a rename...
+
+    # Add flood data to the buildings
+    # returns tz_withgeometry again!
     tz_withgeometry_withflood = flood_data(config.floodratio, config.floodtypes, tz, tz_withgeometry)   # returns tz_withgeometry again!
     # Add volcano data to the buildingss+flood
+    # as above - flood_data is the tz_geometry
     tz_withgeometry_withflood_withvolcano = combine_volcano_buildings(tz_withgeometry_withflood, volcano_lahar, volcano_pyro)   # as above - flood_data is the tz_geometry
     # Calculate earthquake data (couldn't this go above to be more logical?)
+    # as above - but this one only generates earthquake data
     tz_earthquakes = earthquake_data(config.eearthquake_file)  # as above - but this one only generates earthquake data
-
     # Add earthquae data to the buildings+flood+volcano data
     combined_data = hazards_combined(tz_earthquakes, tz_withgeometry_withflood_withvolcano)
 
