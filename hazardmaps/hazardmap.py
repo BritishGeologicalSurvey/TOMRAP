@@ -319,18 +319,23 @@ def main():
     These all have side effects on the geodataframe passed in - eventually we might 
     want to refactor this to be a class with data members etc,
     """
-    volcano_lahar, volcano_pyro = read_volcano_data(config.volcfile, config.volcnames)
+    if config.VOLCANIC:
+        volcano_lahar, volcano_pyro = read_volcano_data(config.volcfile, config.volcnames)
     tz, tz_withgeometry = buildings(config.exposure_file, config.exposure_breakdown_file)  # tz needs a rename...
-
+    
+    # Calculate earthquake data (couldn't this go above to be more logical?)
+    # as above - but this one only generates earthquake data
+    # if config.SEISMIC:
+    tz_earthquakes = earthquake_data(config.eearthquake_file)  # as above - but this one only generates earthquake data
     # Add flood data to the buildings
     # returns tz_withgeometry again!
     tz_withgeometry_withflood = flood_data(config.floodratio, config.floodtypes, tz, tz_withgeometry)   # returns tz_withgeometry again!
     # Add volcano data to the buildingss+flood
     # as above - flood_data is the tz_geometry
-    tz_withgeometry_withflood_withvolcano = combine_volcano_buildings(tz_withgeometry_withflood, volcano_lahar, volcano_pyro)   # as above - flood_data is the tz_geometry
-    # Calculate earthquake data (couldn't this go above to be more logical?)
-    # as above - but this one only generates earthquake data
-    tz_earthquakes = earthquake_data(config.eearthquake_file)  # as above - but this one only generates earthquake data
+    if config.VOLCANIC:
+        tz_withgeometry_withflood_withvolcano = combine_volcano_buildings(tz_withgeometry_withflood, volcano_lahar, volcano_pyro)   # as above - flood_data is the tz_geometry
+    else:
+        tz_withgeometry_withflood_withvolcano = tz_withgeometry_withflood   # 
     # Add earthquae data to the buildings+flood+volcano data
     combined_data = hazards_combined(tz_earthquakes, tz_withgeometry_withflood_withvolcano)
 
