@@ -93,3 +93,11 @@ plot_types = "hmap"
 ```
 
  - `building_type_tz`  -  This is a list of the building types and codes that correspond to the columns loaded from the buildings.dbf file. You would need to inspect this first to see what the column names are as they vary between datasets.
+
+ ## Outputs
+
+ A full set of example outputs can be found in the `plots` folder in this repository. The final hazard map (`hmap`) should look something like this:
+
+ At the moment, further customisation is possible via editing hazardmap.py
+
+ ![hmap](plots/output_hmap.png)
