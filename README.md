@@ -79,7 +79,6 @@ For the following input file names, I tend to use the baseline `DATADIR` and the
  - `volcnames`  - a Python list of names of volcanoes in the Volcano shapefile (you would need to inspect the shapefile first or know the naming conventions used.)
  - `floodratio`  -  A number that sets the interval of the flood ratios, e.g. 1 in 100 etc. 
  - `floodtypes`  -  A list of strings that specifies the flood types to be used in the analysis. e.g. FU, FD, P
-
  - `figure_prefix`  - a string that is appended to the start of the output figures (if required)
  - `plot_types`  - a list of strings that specifies the types of plots that will be produced. The full list would be:
 
