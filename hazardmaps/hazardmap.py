@@ -121,21 +121,12 @@ def buildings(exposure_file, exposure_breakdown_file):
     # Multiply building percentages with set values and sum per location,
     # tz_buildings must have the building type names as columns and match the config.building_type_tz array.  
     # Combine with location id and positions to give tz.
-    # Weightings for each building per hazard type
-
-    tz_weight_pluvial = [0.32, 0.2, 0.12, 0.4, 0.25, 0.15, 0.09, 0.4, 0.25, 0.8, 0.56, 0.56, 0.56, 0.56, 0.56]
-    tz_weight_fluvial = tz_weight_pluvial
-    tz_weight_tephra = [0.3, 0.15, 0.09, 0.4, 0.2, 0.12, 0.09, 0.5, 0.25, 0.2, 0.6, 0.6, 0.6, 0.6, 0.6]
-    tz_weight_lahar = [0.06, 0.1, 0.06, 0.6, 0.3, 0.18, 0.3, 0.4, 0.2, 1, 1, 1, 1, 1, 1]
-    tz_weight_pyro = [0.56, 0.63, 0.7, 0.64, 0.72, 0.8, 0.9, 0.72, 0.81, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8]
-    tz_weight_earthquake = [0.12, 0.32, 0.16, 0.18, 0.48, 0.24, 0.2, 0.09, 0.24, 0.09, 0.3, 0.3, 0.3, 0.3, 0.3]
-
-    tz_buildings["plu"] = tz_buildings[config.building_type_tz].multiply(tz_weight_pluvial).sum(axis=1)
-    tz_buildings["flu"] = tz_buildings[config.building_type_tz].multiply(tz_weight_fluvial).sum(axis=1)
-    tz_buildings["tep"] = tz_buildings[config.building_type_tz].multiply(tz_weight_tephra).sum(axis=1)  #n ot currently used
-    tz_buildings["lahar"] = tz_buildings[config.building_type_tz].multiply(tz_weight_lahar).sum(axis=1)
-    tz_buildings["pyro"] = tz_buildings[config.building_type_tz].multiply(tz_weight_pyro).sum(axis=1)
-    tz_buildings["eq"] = tz_buildings[config.building_type_tz].multiply(tz_weight_earthquake).sum(axis=1)
+    tz_buildings["plu"] = tz_buildings[config.building_type_tz].multiply(config.tz_weight_pluvial).sum(axis=1)
+    tz_buildings["flu"] = tz_buildings[config.building_type_tz].multiply(config.tz_weight_fluvial).sum(axis=1)
+    tz_buildings["tep"] = tz_buildings[config.building_type_tz].multiply(config.tz_weight_tephra).sum(axis=1)  #n ot currently used
+    tz_buildings["lahar"] = tz_buildings[config.building_type_tz].multiply(config.tz_weight_lahar).sum(axis=1)
+    tz_buildings["pyro"] = tz_buildings[config.building_type_tz].multiply(config.tz_weight_pyro).sum(axis=1)
+    tz_buildings["eq"] = tz_buildings[config.building_type_tz].multiply(config.tz_weight_earthquake).sum(axis=1)
 
     tz_buildings = tz_buildings[["plu", "flu", "tep", "lahar", "pyro", "eq"]]
 
