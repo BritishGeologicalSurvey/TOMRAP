@@ -157,7 +157,7 @@ def flood_data(floodratio, floodtypes, tz, tz_withgeometry):
         ffile = config.DATADIR + "%s_1in%d.tif" %(i, config.floodratio)   # flood file
         print("FLOOD FILE: ", ffile)
         raster = gdal.Open(ffile)
-        rasterArray = raster.ReadAsArray()
+        rasterArray = raster.ReadAsArray().transpose()    # eeek!   # Fix transposed Nepal data
         xco, yco = makecoords(raster)
         def getx(xval):
             return(np.argmax(xco[xco<xval]))
@@ -185,6 +185,8 @@ def flood_data(floodratio, floodtypes, tz, tz_withgeometry):
         # Tanzania 
         # don't need building weights to work out hazard index
         tz_withgeometry = tz_withgeometry.assign(fd=rasterArray[xpts, ypts]).rename(columns={'fd':i})
+
+
         
     # convert flood values to (0) 1-5 range
     print("Converting flood values to 1-5 range...")
@@ -196,6 +198,10 @@ def flood_data(floodratio, floodtypes, tz, tz_withgeometry):
     tz_withgeometry = tz_withgeometry.set_index("OBJECTID").merge(tz)     ## NEED to pass in tz
     print("Setting flood column from lambda function")
     tz_withgeometry = tz_withgeometry.assign(flood = lambda x: 0.5*(x.FU * x.flu + x.P * x.plu))
+
+    gpdtz = gpd.GeoDataFrame(tz_withgeometry)
+    gpdcrs = gpdtz.to_crs("EPSG:4326") 
+    tz_withgeometry = gpdcrs
 
     return tz_withgeometry
 
@@ -264,8 +270,11 @@ def hazards_combined(tz_earthquakes, tz_withgeometry):
     # COMBINE
     # Combine to hazard map: 0.5*flood + 0.15 * volc + 0.35 * equ
     print("Combine all to make hmap collum")
-    tz_earthquakesA = tz_earthquakesA.assign(hmap = lambda x: 0.5*x.flood + 0.15*x.volc + 0.35*x.equ)
-
+    if config.VOLCANIC:
+        tz_earthquakesA = tz_earthquakesA.assign(hmap = lambda x: 0.5*x.flood + 0.15*x.volc + 0.35*x.equ)
+    else:
+        # Note - we ned to think about how to reapportion ratios if skipping certain layers
+        tz_earthquakesA = tz_earthquakesA.assign(hmap = lambda x: 0.5*x.flood + 0.5*x.equ)
     return tz_earthquakesA
 
 def plot_histograms(tz_earthquakesA):
@@ -274,12 +283,14 @@ def plot_histograms(tz_earthquakesA):
     plt.hist(tz_earthquakesA.equ)
     tz_earthquakesA.plot(column='equ', markersize=0.1, legend=True)
     # Stripey area - had to be rearranged first before plotting
-    plt.hist(tz_earthquakesA.volc)
-    tz_earthquakesA.plot(column='volc', markersize=0.1, legend=True)
+    if config.VOLCANIC:
+        plt.hist(tz_earthquakesA.volc)
+        tz_earthquakesA.plot(column='volc', markersize=0.1, legend=True)
     plt.hist(tz_earthquakesA.flood)
     tz_earthquakesA.plot(column='flood', markersize=0.1, legend=True)
 
-    np.sum(np.isnan(tz_earthquakesA.volc))
+    if config.VOLCANIC:
+        np.sum(np.isnan(tz_earthquakesA.volc))
     plt.hist(tz_earthquakesA.hmap)
     tz_earthquakesA.plot(column='hmap', markersize=0.1, legend=True)
 
