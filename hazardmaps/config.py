@@ -6,6 +6,12 @@ VOLCANIC = False
 LANDSLIDE = False
 EXPOSURE = True
 
+# This is a bit of a workaround if your flood data
+# triggers an index error, this can be due to swapping the
+# x and y coordinates. The Nepa data requires this to be true 
+# but not Tanzania
+invert_flood_tiff = True
+
 DATADIR = "../datadir/Nepal/"
 # The one above is not found in the data folder - DV added on Friday - was in the other folder
 #config.exposure_file = config.DATADIR + "TZA_buildings_exposure_20200731.dbf" #contains location id and positions  - present

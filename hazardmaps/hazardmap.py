@@ -157,7 +157,10 @@ def flood_data(floodratio, floodtypes, tz, tz_withgeometry):
         ffile = config.DATADIR + "%s_1in%d.tif" %(i, config.floodratio)   # flood file
         print("FLOOD FILE: ", ffile)
         raster = gdal.Open(ffile)
-        rasterArray = raster.ReadAsArray().transpose()    # eeek!   # Fix transposed Nepal data
+        if config.invert_flood_tiff:
+            rasterArray = raster.ReadAsArray().transpose()    # Fix transposed Nepal data
+        else:
+            rasterArray = raster.ReadAsArray()
         xco, yco = makecoords(raster)
         def getx(xval):
             return(np.argmax(xco[xco<xval]))
@@ -199,6 +202,9 @@ def flood_data(floodratio, floodtypes, tz, tz_withgeometry):
     print("Setting flood column from lambda function")
     tz_withgeometry = tz_withgeometry.assign(flood = lambda x: 0.5*(x.FU * x.flu + x.P * x.plu))
 
+    # Put this in to add CRS to this dataframe if not 
+    # combining with volcano data, in the original, the
+    # volcano routine did this.
     gpdtz = gpd.GeoDataFrame(tz_withgeometry)
     gpdcrs = gpdtz.to_crs("EPSG:4326") 
     tz_withgeometry = gpdcrs
