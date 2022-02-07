@@ -36,7 +36,7 @@ figure_prefix = "output_"
 plot_types = "hmap"
 
 # TANZANIA
-
+# These should come from the vuln curves
 building_type_tz = ['CR/LFM/HBET:1,3',
                     'CR/LFM/HBET:4,7',
                     'CR/LFM/HBET:8,20',
