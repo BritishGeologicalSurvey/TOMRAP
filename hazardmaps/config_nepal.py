@@ -1,4 +1,5 @@
 # CONFIG FILE
+# Nepal
 
 SEISMIC = True
 FLOODING = True 
