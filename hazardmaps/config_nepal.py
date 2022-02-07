@@ -36,6 +36,7 @@ figure_prefix = "output_"
 plot_types = "hmap"
 
 # TANZANIA
+building_type = curve_file
 """
 building_type_tz = ['CR/LFM/HBET:1,3',
                     'CR/LFM/HBET:4,7',
