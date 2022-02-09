@@ -15,5 +15,4 @@ test:
     - cd hazardmaps
     - echo $PWD
     - export PYTHONPATH=.
-    - pytest --mpl -vvs test.py 
- 
+    - pytest --mpl -vvs test.py

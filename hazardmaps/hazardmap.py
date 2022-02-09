@@ -157,7 +157,10 @@ def flood_data(floodratio, floodtypes, tz, tz_withgeometry):
         ffile = config.DATADIR + "%s_1in%d.tif" %(i, config.floodratio)   # flood file
         print("FLOOD FILE: ", ffile)
         raster = gdal.Open(ffile)
-        rasterArray = raster.ReadAsArray()
+        if config.invert_flood_tiff:
+            rasterArray = raster.ReadAsArray().transpose()    # Fix transposed Nepal data
+        else:
+            rasterArray = raster.ReadAsArray()
         xco, yco = makecoords(raster)
         def getx(xval):
             return(np.argmax(xco[xco<xval]))
@@ -185,6 +188,8 @@ def flood_data(floodratio, floodtypes, tz, tz_withgeometry):
         # Tanzania 
         # don't need building weights to work out hazard index
         tz_withgeometry = tz_withgeometry.assign(fd=rasterArray[xpts, ypts]).rename(columns={'fd':i})
+
+
         
     # convert flood values to (0) 1-5 range
     print("Converting flood values to 1-5 range...")
@@ -196,6 +201,13 @@ def flood_data(floodratio, floodtypes, tz, tz_withgeometry):
     tz_withgeometry = tz_withgeometry.set_index("OBJECTID").merge(tz)     ## NEED to pass in tz
     print("Setting flood column from lambda function")
     tz_withgeometry = tz_withgeometry.assign(flood = lambda x: 0.5*(x.FU * x.flu + x.P * x.plu))
+
+    # Put this in to add CRS to this dataframe if not 
+    # combining with volcano data, in the original, the
+    # volcano routine did this.
+    gpdtz = gpd.GeoDataFrame(tz_withgeometry)
+    gpdcrs = gpdtz.to_crs("EPSG:4326") 
+    tz_withgeometry = gpdcrs
 
     return tz_withgeometry
 
@@ -264,8 +276,11 @@ def hazards_combined(tz_earthquakes, tz_withgeometry):
     # COMBINE
     # Combine to hazard map: 0.5*flood + 0.15 * volc + 0.35 * equ
     print("Combine all to make hmap collum")
-    tz_earthquakesA = tz_earthquakesA.assign(hmap = lambda x: 0.5*x.flood + 0.15*x.volc + 0.35*x.equ)
-
+    if config.VOLCANIC:
+        tz_earthquakesA = tz_earthquakesA.assign(hmap = lambda x: 0.5*x.flood + 0.15*x.volc + 0.35*x.equ)
+    else:
+        # Note - we ned to think about how to reapportion ratios if skipping certain layers
+        tz_earthquakesA = tz_earthquakesA.assign(hmap = lambda x: 0.5*x.flood + 0.5*x.equ)
     return tz_earthquakesA
 
 def plot_histograms(tz_earthquakesA):
@@ -274,12 +289,14 @@ def plot_histograms(tz_earthquakesA):
     plt.hist(tz_earthquakesA.equ)
     tz_earthquakesA.plot(column='equ', markersize=0.1, legend=True)
     # Stripey area - had to be rearranged first before plotting
-    plt.hist(tz_earthquakesA.volc)
-    tz_earthquakesA.plot(column='volc', markersize=0.1, legend=True)
+    if config.VOLCANIC:
+        plt.hist(tz_earthquakesA.volc)
+        tz_earthquakesA.plot(column='volc', markersize=0.1, legend=True)
     plt.hist(tz_earthquakesA.flood)
     tz_earthquakesA.plot(column='flood', markersize=0.1, legend=True)
 
-    np.sum(np.isnan(tz_earthquakesA.volc))
+    if config.VOLCANIC:
+        np.sum(np.isnan(tz_earthquakesA.volc))
     plt.hist(tz_earthquakesA.hmap)
     tz_earthquakesA.plot(column='hmap', markersize=0.1, legend=True)
 
@@ -319,18 +336,23 @@ def main():
     These all have side effects on the geodataframe passed in - eventually we might 
     want to refactor this to be a class with data members etc,
     """
-    volcano_lahar, volcano_pyro = read_volcano_data(config.volcfile, config.volcnames)
+    if config.VOLCANIC:
+        volcano_lahar, volcano_pyro = read_volcano_data(config.volcfile, config.volcnames)
     tz, tz_withgeometry = buildings(config.exposure_file, config.exposure_breakdown_file)  # tz needs a rename...
-
+    
+    # Calculate earthquake data (couldn't this go above to be more logical?)
+    # as above - but this one only generates earthquake data
+    # if config.SEISMIC:
+    tz_earthquakes = earthquake_data(config.eearthquake_file)  # as above - but this one only generates earthquake data
     # Add flood data to the buildings
     # returns tz_withgeometry again!
     tz_withgeometry_withflood = flood_data(config.floodratio, config.floodtypes, tz, tz_withgeometry)   # returns tz_withgeometry again!
     # Add volcano data to the buildingss+flood
     # as above - flood_data is the tz_geometry
-    tz_withgeometry_withflood_withvolcano = combine_volcano_buildings(tz_withgeometry_withflood, volcano_lahar, volcano_pyro)   # as above - flood_data is the tz_geometry
-    # Calculate earthquake data (couldn't this go above to be more logical?)
-    # as above - but this one only generates earthquake data
-    tz_earthquakes = earthquake_data(config.eearthquake_file)  # as above - but this one only generates earthquake data
+    if config.VOLCANIC:
+        tz_withgeometry_withflood_withvolcano = combine_volcano_buildings(tz_withgeometry_withflood, volcano_lahar, volcano_pyro)   # as above - flood_data is the tz_geometry
+    else:
+        tz_withgeometry_withflood_withvolcano = tz_withgeometry_withflood   # 
     # Add earthquae data to the buildings+flood+volcano data
     combined_data = hazards_combined(tz_earthquakes, tz_withgeometry_withflood_withvolcano)
 

@@ -16,6 +16,7 @@ def test_succeeds():
 
 # This is a long-running test as it essential runs the whole script against
 # the full Tanzania dataset.
+# Should rewrite or skip if nepal data because the logic is slightly different
 @pytest.mark.skipif(os.getenv("GITLAB_CI") is not None, reason="cannot run this test on CI server due to data requirement")
 @pytest.mark.mpl_image_compare
 def test_hazard_map_regression():
