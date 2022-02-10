@@ -62,3 +62,9 @@ building_type_tz = ['C99/LFINF+DNO/HBET:1,3', 'C99/LFINF+DNO/HBET:4,7',
        'MUR+CL99+MOC', 'MUR+CL99+MOM', 'MUR+CL99/HBET:1,3',
        'MUR+CL99/HBET:4,7', 'MUR+STRUB+MOL', 'MUR+STRUB+MOM', 'S', 'S/LFINF',
        'W', 'W+WWD']
+tz_weight_pluvial = [0.32, 0.2, 0.12, 0.4, 0.25, 0.15, 0.09, 0.4, 0.25, 0.8, 0.56, 0.56, 0.56, 0.56, 0.56]
+tz_weight_fluvial = tz_weight_pluvial
+tz_weight_tephra = [0.3, 0.15, 0.09, 0.4, 0.2, 0.12, 0.09, 0.5, 0.25, 0.2, 0.6, 0.6, 0.6, 0.6, 0.6]
+tz_weight_lahar = [0.06, 0.1, 0.06, 0.6, 0.3, 0.18, 0.3, 0.4, 0.2, 1, 1, 1, 1, 1, 1]
+tz_weight_pyro = [0.56, 0.63, 0.7, 0.64, 0.72, 0.8, 0.9, 0.72, 0.81, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8]
+tz_weight_earthquake = [0.12, 0.32, 0.16, 0.18, 0.48, 0.24, 0.2, 0.09, 0.24, 0.09, 0.3, 0.3, 0.3, 0.3, 0.3]
