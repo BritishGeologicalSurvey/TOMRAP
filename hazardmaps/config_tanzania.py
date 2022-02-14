@@ -7,6 +7,9 @@ VOLCANIC = True
 LANDSLIDE = False
 EXPOSURE = True
 
+# Read in vuln curves
+CUSTOM_VULN_CURVE = True
+
 # This is a bit of a workaround if your flood data
 # triggers an index error, this can be due to swapping the
 # x and y coordinates. The Nepa data requires this to be true 
@@ -34,6 +37,9 @@ figure_prefix = "output_"
 #plot_types = ["ear", "plu", "flu", "tep", "lahar", "pgaindx", "P", "FU", "lah", "pyr", "equ", "flood", "volc", "hmap"]
 # OVERWRITE QUICK TEST
 plot_types = "hmap"
+
+hazard_intensity = 2.0    # Used to lookup the damage multiplier 
+vuln_curve_file = "vuln_curve_tanzania.csv"
 
 # TANZANIA
 # These should come from the vuln curves
