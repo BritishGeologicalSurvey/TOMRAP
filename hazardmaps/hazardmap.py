@@ -115,6 +115,18 @@ def buildings(exposure_file, exposure_breakdown_file):
     """
     Load the building data and convert to have geometry
     """
+    if config.CUSTOM_VULN_CURVE:
+        print("Reading vulnerabiltiy curve...")
+        vuln_file = config.DATADIR + config.vuln_curve_file
+        vuln_table = pd.read_csv(config.vuln_curve_file, index_col=0)
+
+
+        # Extract the nearest row INDEX matching the user defined value.
+        vuln_row_idx = vuln_table[vuln_table.columns[0]].sub(config.hazard_intensity).abs().idxmin()
+        # Now retrieve that row using the lookup value INDEX
+        vuln_row = vuln_table[[vuln_idx]]
+        # Now multiply the hazard vulnerablity, by building type though.
+
     tz_buildings = getbreakdown(config.exposure_breakdown_file)
     tz_withgeometry = dbf_to_df(config.exposure_file)
     breakpoint()
@@ -136,7 +148,7 @@ def buildings(exposure_file, exposure_breakdown_file):
 
     # So do we want to apply the building type multiplication by vuln curve in here somewhere:
     # 1. User specifies intensity in config file
-    # 2. User specifies vlun curve csv file
+    # 2. User specifies vuln curve csv file
     # 3. Code reads in the relevant hazard risk for vuln curve type of building by lookup
     # 4. Set the risk for each CONTYPE by multiplying this value against the points in the dataframe
 
