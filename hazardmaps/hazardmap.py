@@ -115,21 +115,25 @@ def buildings(exposure_file, exposure_breakdown_file):
     """
     Load the building data and convert to have geometry
     """
+    tz_buildings = getbreakdown(config.exposure_breakdown_file)
+    tz_withgeometry = dbf_to_df(config.exposure_file)
+
     if config.CUSTOM_VULN_CURVE:
         print("Reading vulnerabiltiy curve...")
         vuln_file = config.DATADIR + config.vuln_curve_file
-        vuln_table = pd.read_csv(config.vuln_curve_file, index_col=0)
+        vuln_table = pd.read_csv(vuln_file, index_col=0)
 
-
+        # https://stackoverflow.com/questions/52587436/find-row-closest-value-to-input
         # Extract the nearest row INDEX matching the user defined value.
         vuln_row_idx = vuln_table[vuln_table.columns[0]].sub(config.hazard_intensity).abs().idxmin()
+        breakpoint()
         # Now retrieve that row using the lookup value INDEX
-        vuln_row = vuln_table[[vuln_idx]]
+        vuln_row = vuln_table.loc[vuln_row_idx]
+        
         # Now multiply the hazard vulnerablity, by building type though.
+        tz_buildings= tz_buildings.mul(vuln_row, axis='columns')
 
-    tz_buildings = getbreakdown(config.exposure_breakdown_file)
-    tz_withgeometry = dbf_to_df(config.exposure_file)
-    breakpoint()
+    #breakpoint()
     # Multiply building percentages with set values and sum per location,
     # tz_buildings must have the building type names as columns and match the config.building_type_tz array.  
     # Combine with location id and positions to give tz.
