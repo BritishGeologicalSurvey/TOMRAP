@@ -138,12 +138,14 @@ def buildings(exposure_file, exposure_breakdown_file):
     # tz_buildings must have the building type names as columns and match the config.building_type_tz array.  
     # Combine with location id and positions to give tz.
 
+
     # Each one of these adds a new column as these don't currently exist.
     tz_buildings["plu"] = tz_buildings[config.building_type_tz].multiply(config.tz_weight_pluvial).sum(axis=1)
     tz_buildings["flu"] = tz_buildings[config.building_type_tz].multiply(config.tz_weight_fluvial).sum(axis=1)
     tz_buildings["tep"] = tz_buildings[config.building_type_tz].multiply(config.tz_weight_tephra).sum(axis=1)  #n ot currently used
     tz_buildings["lahar"] = tz_buildings[config.building_type_tz].multiply(config.tz_weight_lahar).sum(axis=1)
     tz_buildings["pyro"] = tz_buildings[config.building_type_tz].multiply(config.tz_weight_pyro).sum(axis=1)
+    # TODO : Thought --- do we actually want another multiply here and a summation when in viln curve mode??
     tz_buildings["eq"] = tz_buildings[config.building_type_tz].multiply(config.tz_weight_earthquake).sum(axis=1)
 
     # Then we drop all the other columns to just leave the hazard types. (drop obj IDs as well?)
