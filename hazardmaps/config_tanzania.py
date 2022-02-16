@@ -8,7 +8,7 @@ LANDSLIDE = False
 EXPOSURE = True
 
 # Read in vuln curves
-CUSTOM_VULN_CURVE = True
+CUSTOM_VULN_CURVE = False
 
 # This is a bit of a workaround if your flood data
 # triggers an index error, this can be due to swapping the
@@ -62,6 +62,8 @@ building_type_tz = ['CR/LFM/HBET:1,3',
 # Numbers could be no. of floors
 # Could be made more general. Could be different in UK for e.g.
 # Building type weightings
+
+# Do we ned these multiplications of doing custom vuln curves? Check...
 tz_weight_pluvial = [0.32, 0.2, 0.12, 0.4, 0.25, 0.15, 0.09, 0.4, 0.25, 0.8, 0.56, 0.56, 0.56, 0.56, 0.56]
 tz_weight_fluvial = tz_weight_pluvial
 tz_weight_tephra = [0.3, 0.15, 0.09, 0.4, 0.2, 0.12, 0.09, 0.5, 0.25, 0.2, 0.6, 0.6, 0.6, 0.6, 0.6]
