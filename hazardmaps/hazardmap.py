@@ -126,7 +126,7 @@ def buildings(exposure_file, exposure_breakdown_file):
         # https://stackoverflow.com/questions/52587436/find-row-closest-value-to-input
         # Extract the nearest row INDEX matching the user defined value.
         vuln_row_idx = vuln_table[vuln_table.columns[0]].sub(config.hazard_intensity).abs().idxmin()
-        breakpoint()
+        
         # Now retrieve that row using the lookup value INDEX
         vuln_row = vuln_table.loc[vuln_row_idx]
         
@@ -146,6 +146,7 @@ def buildings(exposure_file, exposure_breakdown_file):
     tz_buildings["lahar"] = tz_buildings[config.building_type_tz].multiply(config.tz_weight_lahar).sum(axis=1)
     tz_buildings["pyro"] = tz_buildings[config.building_type_tz].multiply(config.tz_weight_pyro).sum(axis=1)
     # TODO : Thought --- do we actually want another multiply here and a summation when in viln curve mode??
+    breakpoint()
     tz_buildings["eq"] = tz_buildings[config.building_type_tz].multiply(config.tz_weight_earthquake).sum(axis=1)
 
     # Then we drop all the other columns to just leave the hazard types. (drop obj IDs as well?)

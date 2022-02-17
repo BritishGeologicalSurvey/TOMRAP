@@ -8,7 +8,7 @@ LANDSLIDE = False
 EXPOSURE = True
 
 # Read in vuln curves
-CUSTOM_VULN_CURVE = False
+CUSTOM_VULN_CURVE = True
 
 # This is a bit of a workaround if your flood data
 # triggers an index error, this can be due to swapping the
