@@ -36,7 +36,7 @@ eearthquake_file = DATADIR + "hazard_map_mean_tanzania.dbf" #contains earthquake
 figure_prefix = "output_"
 #plot_types = ["ear", "plu", "flu", "tep", "lahar", "pgaindx", "P", "FU", "lah", "pyr", "equ", "flood", "volc", "hmap"]
 # OVERWRITE QUICK TEST
-plot_types = "hmap"
+plot_types = ["hmap", "equ"]
 
 hazard_intensity = 2.0    # Used to lookup the damage multiplier 
 vuln_curve_file = "vuln_curve_tanzania.csv"
