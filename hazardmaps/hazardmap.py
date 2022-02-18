@@ -145,9 +145,13 @@ def buildings(exposure_file, exposure_breakdown_file):
     tz_buildings["tep"] = tz_buildings[config.building_type_tz].multiply(config.tz_weight_tephra).sum(axis=1)  #n ot currently used
     tz_buildings["lahar"] = tz_buildings[config.building_type_tz].multiply(config.tz_weight_lahar).sum(axis=1)
     tz_buildings["pyro"] = tz_buildings[config.building_type_tz].multiply(config.tz_weight_pyro).sum(axis=1)
+    
     # TODO : Thought --- do we actually want another multiply here and a summation when in viln curve mode??
-    breakpoint()
-    tz_buildings["eq"] = tz_buildings[config.building_type_tz].multiply(config.tz_weight_earthquake).sum(axis=1)
+    if config.CUSTOM_VULN_CURVE:
+        # No multiply here because we have already done it above
+        tz_buildings["eq"] = tz_buildings[config.building_type_tz].sum(axis=1)
+    else:
+        tz_buildings["eq"] = tz_buildings[config.building_type_tz].multiply(config.tz_weight_pyro).sum(axis=1)
 
     # Then we drop all the other columns to just leave the hazard types. (drop obj IDs as well?)
     # Object ID still present as CONTYPE 
