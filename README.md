@@ -94,10 +94,31 @@ plot_types = "hmap"
 
  - `building_type_tz`  -  This is a list of the building types and codes that correspond to the columns loaded from the buildings.dbf file. You would need to inspect this first to see what the column names are as they vary between datasets.
 
- ## Outputs
+### Vulnerability Curve inputs
 
- A full set of example outputs can be found in the `plots` folder in this repository. The final hazard map (`hmap`) should look something like this:
+It is possible to use custom vulnerability curves to determine the hazard multiplier for the hazard map generation. This means, given a user
+specified hazard intensity set in the **config.py** file, this value is used to look up the corresponding damage multiplier in the csv file curve,
+unique to each building type. The hazard risk for the relevant risk type is then based on the value found in the vulnerability curve in the final map.
 
- At the moment, further customisation is possible via editing hazardmap.py
+Currently this is only available for Earthquakes.
 
- ![hmap](plots/output_hmap.png)
+To use this, in the **config.py** file, set the folllowing paramters:
+
+```
+hazard_intensity = 2.0    # Used to lookup the damage multiplier 
+vuln_curve_file = "vuln_curve_tanzania.csv"
+```
+
+The vulnerability curve file is a plain text csv file with columns giving damage multiplier by building code type, and
+rows giving the hazard intensity. The code is able to look-up the closest appropriate multiplier in the csv file,
+so if you specify "2.0" as the hazard intensity, the code will automatically select, say, "2.12" if that happeneed to be the 
+nearest matching value, so it is not necessary to know the exact values of hazard intensity, as long as your input value
+is within the range of intensities given in the input file.
+ 
+## Outputs
+
+A full set of example outputs can be found in the `plots` folder in this repository. The final hazard map (`hmap`) should look something like this:
+
+At the moment, further customisation is possible via editing hazardmap.py
+
+![hmap](plots/output_hmap.png)
