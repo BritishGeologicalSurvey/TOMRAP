@@ -16,3 +16,24 @@ test:
     - echo $PWD
     - export PYTHONPATH=.
     - pytest --mpl -vvs test.py
+
+pages-test:
+  stage: 
+  script:
+  - pip install -U sphinx
+  - sphinx-build -b html . docs
+  only:
+  - branches
+  except:
+  - master
+
+pages:
+  stage: deploy
+  script:
+  - pip install -U sphinx
+  - sphinx-build -b html . docs
+  artifacts:
+    paths:
+    - public
+  only:
+  - master
