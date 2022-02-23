@@ -1,7 +1,7 @@
 stages:
   - test
-  - pages-test
   - pages
+  - deploy
 
 test:
   tags:
@@ -19,8 +19,8 @@ test:
     - export PYTHONPATH=.
     - pytest --mpl -vvs test.py
 
-pages-test:
-  stage: 
+pages-build:
+  stage: pages
   script:
   - pip install -U sphinx
   - sphinx-build -b html . docs
@@ -30,7 +30,7 @@ pages-test:
   - master
 
 pages:
-  stage: deploy
+  stage: pages
   script:
   - pip install -U sphinx
   - sphinx-build -b html . docs
