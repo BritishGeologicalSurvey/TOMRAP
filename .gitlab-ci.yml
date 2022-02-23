@@ -20,6 +20,7 @@ test:
     - pytest --mpl -vvs test.py
 
 pages-build:
+  image: continuumio/miniconda3:4.10.3 
   stage: pages
   script:
   - conda env create -n pages
