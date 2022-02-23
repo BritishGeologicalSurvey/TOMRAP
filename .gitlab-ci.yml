@@ -1,5 +1,7 @@
 stages:
   - test
+  - pages-test
+  - pages
 
 test:
   tags:
