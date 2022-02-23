@@ -19,7 +19,7 @@ test:
     - export PYTHONPATH=.
     - pytest --mpl -vvs test.py
 
-pages-build:
+pages:
   image: continuumio/miniconda3:4.10.3 
   stage: pages
   script:
