@@ -22,7 +22,11 @@ test:
 pages-build:
   stage: pages
   script:
-  - pip install -U sphinx
+  - conda env create -n pages
+  - conda install -y sphinx -n pages
+  - conda init bash
+  - source ~/.bashrc
+  - conda activate pages
   - sphinx-build -b html . docs
   only:
   - branches
