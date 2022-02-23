@@ -28,11 +28,10 @@ pages-build:
   - conda init bash
   - source ~/.bashrc
   - conda activate pages
-  - sphinx-build -b html -c ./docs docs build
+  - sphinx-build -b html -c ./docs docs public
   artifacts:
     paths:
-    - docs
-    - build
+    - public
   only:
   - master
 
