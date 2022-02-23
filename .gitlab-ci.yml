@@ -28,7 +28,7 @@ pages-build:
   - conda init bash
   - source ~/.bashrc
   - conda activate pages
-  - sphinx-build -b html . docs
+  - sphinx-build -b html -c ./docs docs build
   artifacts:
     paths:
     - docs
