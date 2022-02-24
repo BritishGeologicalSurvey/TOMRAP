@@ -9,6 +9,10 @@ Welcome to GitLab Pages with Sphinx's documentation!
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+   
+   installation
+   quickrun
+   configuring
 
 Indices and tables
 ==================
