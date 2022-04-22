@@ -116,5 +116,10 @@ Outputs
 
 A full set of example outputs can be found in the ``plots`` folder in this repository. The final hazard map (``hmap``) should look something like this:
 
+|hmap_sample| 
+
 At the moment, further customisation is possible via editing hazardmap.py
 
+.. |hmap_sample| image:: media/output_hmap.png
+   :width: 6.26806in
+   :height: 3.08472in
