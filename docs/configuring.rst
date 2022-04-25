@@ -5,91 +5,159 @@ Further configuration details can be added here when the functionality becomes a
 
 Here we will take a look at the `conf.py` file to see how to configure the hazardmap settings and data sources:
 
-###  Hazard options
+Hazard options
+--------------
 
 These flags (True/False) determine which hazard inputs will be
 used to calculate the overall hazard map at the end.
-```
-SEISMIC = True
-FLOODING = True 
-VOLCANIC = True
-LANDSLIDE = False
-EXPOSURE = True
-```
 
-### Custom vulnerability curve
+::
+
+  SEISMIC = True
+  FLOODING = True 
+  VOLCANIC = True
+  LANDSLIDE = False
+  EXPOSURE = True
+
+
+Custom vulnerability curve
+--------------------------
 
 Setting this to true will make the TOMRAP tool look for 
-a csv file that defines vulnerability rating curves by 
+a csv file that defines vulnerability rating curves by
 building type as a csv file.
 
-```
-# Read in vuln curves
-CUSTOM_VULN_CURVE = True
-```
+An example custom vulnerability curve is located in the repository here:
 
-### Invert coordinates 
+`Example vulnerability curve for Tanzania buildings <https://kwvmxgit.ad.nerc.ac.uk/python/hazardmaps/-/raw/master/example_data/vuln_curve_sample.csv?inline=false>`_
+
+Vulnerability curves work in place of the list of building weights found at the bottom of the config file. 
+(See further down this document.) Instead of using the same multiplier for every building type in all cases,
+the user can specifiy a hazard likelihood in this config file (`hazard_intensity`) and then the weighting for
+that specific likelihood is read from the vulnerability curve supplied. TOMRAP does not require the exact 
+hazard intensity specified to match the values supplied in the vulnerability curve. For example, if you specify 
+a hazard intensity in the config file here that falls between two points in the csv file, TOMRAP will choose the
+closest matching value in the csv file. The `vuln_curve_file` is relative to the `DATADIR` directory. 
+
+::
+
+  CUSTOM_VULN_CURVE = True
+
+  hazard_intensity = 2.0    
+  vuln_curve_file = "vuln_curve_example.csv"
+
+
+See also the section on `Calculating vulnerability curves <http://python.glpages.ad.nerc.ac.uk/hazardmaps/modeldetail.html#defining-weights-by-vulnerability-curve>`_
+
+
+Invert coordinates
+------------------
 
 This is a bit of a workaround if your flood data
 triggers an index error, this can be due to swapping the
 x and y coordinates. The Nepa data requires this to be true 
 but not Tanzania
-```
-invert_flood_tiff = False
-```
 
-### Data locations and types
+::
 
-```
-DATADIR = "../datadir/Tanzania/"
-# The one above is not found in the data folder - DV added on Friday - was in the other folder
-#config.exposure_file = config.DATADIR + "TZA_buildings_exposure_20200731.dbf" #contains location id and positions  - present
-exposure_file = DATADIR + "TZA_buildings_exposure_20200731.dbf" #contains location id and positions  - present
-exposure_breakdown_file = DATADIR + "TZA_buildings_exposure_breakdown_20200731.dbf" 
-#contains location id and breakdown of number of each house type
-#volcP = ["kyejo", "meru"]
-#volcL = ["lengai", "ngozi", "rungwe"]
-volcfile = DATADIR + "World_Volcanoes_Smithsonian_Institution_GVP.shp" #point locations of volcanoes
-volcnames = ["Lengai, Ol Doinyo", "Meru", "Ngozi", "Rungwe", "Kyejo"] #names of volcanoes in Smithsonian shp
-
-# 1 in 100, 1 in 200 in the file
-floodratio = 100 # selects from different flood tifs
-floodtypes = ["FD", "FU", "P"]  #selects from different flood tifs
-# in the Seismic folder
-eearthquake_file = DATADIR + "hazard_map_mean_tanzania.dbf" #contains earthquake information
-```
-
-### Output plot files
-
-```
-figure_prefix = "output_"
-plot_types = ["ear", "plu", "flu", "tep", "lahar", "pgaindx", "P", "FU", "lah", "pyr", "equ", "flood", "volc", "hmap"]
-```
+  invert_flood_tiff = False
 
 
-hazard_intensity = 2.0    # Used to lookup the damage multiplier 
-vuln_curve_file = "vuln_curve_tanzania.csv"
-```
+Data locations and types
+-------------------------
 
-### Buildig types
+:: 
 
-```
-building_type_tz = ['CR/LFM/HBET:1,3',
-                    'CR/LFM/HBET:4,7',
-                    'CR/LFM/HBET:8,20',
-                    'CR/LFINF+DNO/HBET:1,3',
-                    'CR/LFINF+DNO/HBET:4,7', 
-                    'CR/LFINF+DNO/HBET:8,20',
-                    'S',                     
-                    'MUR+CB99/HBET:1,3',
-                    'MUR+CB99/HBET:4,7',
-                    'W',
-                    'MATO/LN', 
-                    'MUR+ADO/HBET:1,3',
-                    'MUR+CL99', 
-                    'MUR+STRUB',
-                     'W+WWD']
-```
+  
+  DATADIR = "../datadir/Tanzania/"
+  # The one above is not found in the data folder - DV added on Friday - was in the other folder
+  #config.exposure_file = config.DATADIR + "TZA_buildings_exposure_20200731.dbf" #contains location id and positions  - present
+  exposure_file = DATADIR + "TZA_buildings_exposure_20200731.dbf" #contains location id and positions  - present
+  exposure_breakdown_file = DATADIR + "TZA_buildings_exposure_breakdown_20200731.dbf" 
+  #contains location id and breakdown of number of each house type
+  #volcP = ["kyejo", "meru"]
+  #volcL = ["lengai", "ngozi", "rungwe"]
+  volcfile = DATADIR + "World_Volcanoes_Smithsonian_Institution_GVP.shp" #point locations of volcanoes
+  volcnames = ["Lengai, Ol Doinyo", "Meru", "Ngozi", "Rungwe", "Kyejo"] #names of volcanoes in Smithsonian shp
+
+  # 1 in 100, 1 in 200 in the file
+  floodratio = 100 # selects from different flood tifs
+  floodtypes = ["FD", "FU", "P"]  #selects from different flood tifs
+  # in the Seismic folder
+  eearthquake_file = DATADIR + "hazard_map_mean_tanzania.dbf" #contains earthquake information
+
+
+Output plot files
+-----------------
+
+The `figure_prefix` option simply appends some text to the start of every output figure
+to help with organising your files later. It can be left as an empty string to append no
+text: `''` if you prefer.
+
+The `plot_types` is a python list of the various plot types supported by TOMRAP. You can specify as
+many or as few as you like. 
+
+::
+
+  figure_prefix = "output_"
+  plot_types = ["ear", "plu", "flu", "tep", "lahar", "pgaindx", "P", "FU", "lah", "pyr", "equ", "flood", "volc", "hmap"]
+
+The plot type codes are explained in the table below:
+
+========== ==========================
+Plot code  Explanation
+========== ==========================
+ear        Earthquake
+plu        Pluvial
+flu        Fluvial
+tep        Tephra
+lahar      Lahars
+P          ---
+FU         ---
+pgaindx    Peak Ground Acceleration
+pyr        Pyroclastic flows
+equ        Combined Earthquake Hazard
+flood      Combined Flood Hazard
+volc       Combined Volcanic Hazard
+hmap       Combined All Hazards
+========== ==========================
+
+Pluvial Flooding is that caused by rainfall alone, Fluvial flooding is that which is caused by
+the overflowing of a water body (a river, for example.)
+
+`hmap` is the "final" combined hazard map, though you may have use cases where you want to 
+produce the component hazard risks as well.
+
+
+
+Building types
+--------------
+
+`building_type_tz`
+
+The building type codes are used to calculate risk based on building
+type, either from the values specified in the config file, or the vulnerability curve
+csv file supplied. The codes below should match the ones in the dbf files. 
+
+::
+
+
+  building_type_tz = ['CR/LFM/HBET:1,3',
+                      'CR/LFM/HBET:4,7',
+                      'CR/LFM/HBET:8,20',
+                      'CR/LFINF+DNO/HBET:1,3',
+                      'CR/LFINF+DNO/HBET:4,7', 
+                      'CR/LFINF+DNO/HBET:8,20',
+                      'S',                     
+                      'MUR+CB99/HBET:1,3',
+                      'MUR+CB99/HBET:4,7',
+                      'W',
+                      'MATO/LN', 
+                      'MUR+ADO/HBET:1,3',
+                      'MUR+CL99', 
+                      'MUR+STRUB',
+                       'W+WWD']
+
 
 ### Manual weightings
 
