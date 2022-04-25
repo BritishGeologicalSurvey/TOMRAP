@@ -74,17 +74,74 @@ Data locations and types
   #config.exposure_file = config.DATADIR + "TZA_buildings_exposure_20200731.dbf" #contains location id and positions  - present
   exposure_file = DATADIR + "TZA_buildings_exposure_20200731.dbf" #contains location id and positions  - present
   exposure_breakdown_file = DATADIR + "TZA_buildings_exposure_breakdown_20200731.dbf" 
-  #contains location id and breakdown of number of each house type
-  #volcP = ["kyejo", "meru"]
-  #volcL = ["lengai", "ngozi", "rungwe"]
-  volcfile = DATADIR + "World_Volcanoes_Smithsonian_Institution_GVP.shp" #point locations of volcanoes
-  volcnames = ["Lengai, Ol Doinyo", "Meru", "Ngozi", "Rungwe", "Kyejo"] #names of volcanoes in Smithsonian shp
+
+
+Volcano data specifications
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`volcP` is a list of volcano code names used to calculate Pyroclastic flow hazards.
+
+`volcL` is a list of volcano code names used to calculate Lahar hazards.
+
+`volcfile` is the shapefile containing the volcano point data (referenced by the code names). 
+You would have to inspect this file first to retrieve the code names used.
+
+`volcnames` is a list of all the volcanos used in the analysis.
+
+:: 
+
+  volcP = ["kyejo", "meru"]
+  volcL = ["lengai", "ngozi", "rungwe"]
+  volcfile = DATADIR + "World_Volcanoes_Smithsonian_Institution_GVP.shp" 
+  volcnames = ["Lengai, Ol Doinyo", "Meru", "Ngozi", "Rungwe", "Kyejo"]
+
+
+Flood data specifications
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`flood_ratio` refers to the return period of the flood data you have. So if you have a series
+of flood TIFFs separated by 100 year return period intervals, you would specificy "100" here.
+
+The filenames must match the structure below, i.e.
+
+`FLOODTYPE_1inXXX.tif`, e.g `PU_1in100.tif`  (that's a one not an L, i.e. "one in a hundred")
+
+::
+
+  PU_1in100.tif    # One in 100 year pluvial flood map
+  PU_1in200.tif    # One in 200 year pluvial flood map
+  PU_1in300.tif
+
+  FD_1in100.tif    # One in 100 year fluvial (defended) flood map
+  FD_1in200.tif
+  FD_1in300.tif
+  ..and so on
+
+Should be specified in the config file as:
+
+::
 
   # 1 in 100, 1 in 200 in the file
   floodratio = 100 # selects from different flood tifs
   floodtypes = ["FD", "FU", "P"]  #selects from different flood tifs
-  # in the Seismic folder
-  eearthquake_file = DATADIR + "hazard_map_mean_tanzania.dbf" #contains earthquake information
+
+`floodtypes` is a list of codes for the type of flood in the tiff.
+
+**P** - Pluvial
+
+**FD** - Fluvial - defended
+
+**FU** - Fluvial - undefended
+
+
+Earthquake data supplementary info
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+At present, the only parameter needed is the earthquake file DBF file. 
+
+::
+
+  eearthquake_file = DATADIR + "hazard_map_mean_tanzania.dbf"   (yes that is two Es in eearthquake...)
 
 
 Output plot files
@@ -159,14 +216,26 @@ csv file supplied. The codes below should match the ones in the dbf files.
                        'W+WWD']
 
 
-### Manual weightings
+Manual weightings
+-----------------
 
-```
-# Building type weightings
-tz_weight_pluvial = [0.32, 0.2, 0.12, 0.4, 0.25, 0.15, 0.09, 0.4, 0.25, 0.8, 0.56, 0.56, 0.56, 0.56, 0.56]
-tz_weight_fluvial = tz_weight_pluvial
-tz_weight_tephra = [0.3, 0.15, 0.09, 0.4, 0.2, 0.12, 0.09, 0.5, 0.25, 0.2, 0.6, 0.6, 0.6, 0.6, 0.6]
-tz_weight_lahar = [0.06, 0.1, 0.06, 0.6, 0.3, 0.18, 0.3, 0.4, 0.2, 1, 1, 1, 1, 1, 1]
-tz_weight_pyro = [0.56, 0.63, 0.7, 0.64, 0.72, 0.8, 0.9, 0.72, 0.81, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8]
-tz_weight_earthquake = [0.12, 0.32, 0.16, 0.18, 0.48, 0.24, 0.2, 0.09, 0.24, 0.09, 0.3, 0.3, 0.3, 0.3, 0.3]
-```
+The set of weightings at the end of the config file is used to set the building weights for each type.
+
+The order of the list for each type matches that in the `building_type_tz` list above. So each item in the 
+list is an element-wise weight for the building type. Therefore, the lists below have to be the same length 
+as the `building_type_tz` list above. Note that each hazard type has a separate weighting list. Currently 
+only earthquakes can be set to have a vulnerability curve defined in a csv file, as of May 2022, you must set
+the other hazard weighting types using this list method below. You may set weights to be the same by using the
+syntax `tz_weight_fluvial = tz_weight_pluvial` for example, to set fluvial and pluvial weightings to use the
+same weights if you wanted to.
+
+::
+
+  # Building type weightings
+  tz_weight_pluvial = [0.32, 0.2, 0.12, 0.4, 0.25, 0.15, 0.09, 0.4, 0.25, 0.8, 0.56, 0.56, 0.56, 0.56, 0.56]
+  tz_weight_fluvial = tz_weight_pluvial
+  tz_weight_tephra = [0.3, 0.15, 0.09, 0.4, 0.2, 0.12, 0.09, 0.5, 0.25, 0.2, 0.6, 0.6, 0.6, 0.6, 0.6]
+  tz_weight_lahar = [0.06, 0.1, 0.06, 0.6, 0.3, 0.18, 0.3, 0.4, 0.2, 1, 1, 1, 1, 1, 1]
+  tz_weight_pyro = [0.56, 0.63, 0.7, 0.64, 0.72, 0.8, 0.9, 0.72, 0.81, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8]
+  tz_weight_earthquake = [0.12, 0.32, 0.16, 0.18, 0.48, 0.24, 0.2, 0.09, 0.24, 0.09, 0.3, 0.3, 0.3, 0.3, 0.3]
+
