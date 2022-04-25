@@ -37,6 +37,8 @@ accompanied the project.
 
 |flowchart|
 
+Model details
+-------------
 
 The next sections go into a little more detail. The formatting is a 
 little unrefined but it should give you the key points of each step 
@@ -88,11 +90,10 @@ For the original building weights tables, for buildings in Tanzania and Nepal, r
 
 
 
-Calculating Multihazard Vulnerability
-======================================
+Weighting equations and calculations
+--------------------------------------
 
-Tanzania
---------
+**TANZANIA**
 
 
 Hazard Footprint Weight (HFW)
@@ -187,8 +188,8 @@ Volcanic: 0.15
 
 **= Tanzania Multihazard vulnerability.**
 
-Nepal
------
+
+**NEPAL***
 
 Hazard Footprint Weight (HFW)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -283,6 +284,35 @@ Landslide: 0.333
 
 **= Nepal Multihazard vulnerability.**
 
+
+
+Defining weights by vulnerability curve
+----------------------------------------
+
+This can now be done by supplying a separate vulnerability curve in the
+form of a csv file. The csv file should be formatted with the first
+column being the vulnerability multiplier, and the subsequent columns
+along being the building type (header) and the mapped intensity values
+below. In effect, this works as a lookup table, where the user specifies
+a hazard intensity (in the config file) and then this value is used to
+look-up the corresponding vulnerability multiplier, *per building type*.
+The resulting lookup feature then gives a specific set of weights for a
+given hazard intensity, which are combined into the pixel-by-pixel
+hazard map (as in step 3 above [multihazard_model.docx]).
+
+|vulncurve|
+
+**Fig. User edits Hazard Intensity in the config file, then
+multipliers/weights are returned by the program for each building type
+(2 illustrated here).**
+
+*Currently this has only been implemented with the earthquake data, as
+we had vulnerability curves for the building types for these data (For
+both Tanzania and Nepal). It would be possible to extend this further to
+other data types, if other vulnerability curves are available in CSV
+format for testing.*
+
+
 Future items to implement
 -------------------------
 
@@ -316,32 +346,6 @@ types in their model run to match the number of building types that they
 have.
 
 
-
-Defining weights by vulnerability curve
-----------------------------------------
-
-This can now be done by supplying a separate vulnerability curve in the
-form of a csv file. The csv file should be formatted with the first
-column being the vulnerability multiplier, and the subsequent columns
-along being the building type (header) and the mapped intensity values
-below. In effect, this works as a lookup table, where the user specifies
-a hazard intensity (in the config file) and then this value is used to
-look-up the corresponding vulnerability multiplier, *per building type*.
-The resulting lookup feature then gives a specific set of weights for a
-given hazard intensity, which are combined into the pixel-by-pixel
-hazard map (as in step 3 above [multihazard_model.docx]).
-
-|vulncurve|
-
-**Fig. User edits Hazard Intensity in the config file, then
-multipliers/weights are returned by the program for each building type
-(2 illustrated here).**
-
-*Currently this has only been implemented with the earthquake data, as
-we had vulnerability curves for the building types for these data (For
-both Tanzania and Nepal). It would be possible to extend this further to
-other data types, if other vulnerability curves are available in CSV
-format for testing.*
 
 .. |flowchart| image:: media/flowchart.png
    :width: 6.26806in

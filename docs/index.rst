@@ -31,6 +31,7 @@ To submit issues, report bugs, or feature requests submit them at: https://kwvmx
    quickrun
    configuring
    modeldetail
+   data_local
 
 
 Fork this project
