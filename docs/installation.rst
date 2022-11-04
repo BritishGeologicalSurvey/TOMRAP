@@ -10,7 +10,7 @@ General Instructions
 --------------------
 
 You must have a Python installation to run the software. I recommend using the Anaconda distribution as
-it is aimed at scientific users of Python, and provides a _package manager_ called Conda which makes
+it is aimed at scientific users of Python, and provides a *package manager* called Conda which makes
 installation a bit easier. 
 
 In Conda terminology, we talk about having an "environment" which contains all the libraries and
