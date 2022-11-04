@@ -23,7 +23,7 @@ pages:
   image: continuumio/miniconda3:4.10.3 
   stage: pages
   script:
-  - conda env create -n pages
+  - conda create -n pages
   - conda install -y sphinx -n pages
   - conda install -y sphinx_rtd_theme -n pages
   - conda init bash
