@@ -1,5 +1,7 @@
 # TOMRAP – Tool for Multi-hazard Risk Assessment in Python
 
+A detailed installation and user guide can be found here: http://python.glpages.ad.nerc.ac.uk/hazardmaps/
+
 *Description from the original IFF proposal**
 
 The project builds on outputs from the METEOR project (NEE6423R) to generate a tool that can be used in future projects to assess multi-hazard risk. The METEOR model was initially developed in ArcGIS. By streamlining this code in Python we will make multi-hazard risk analysis faster and more widely applicable.
