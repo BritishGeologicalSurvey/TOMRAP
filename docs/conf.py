@@ -18,8 +18,8 @@
 # -- Project information -----------------------------------------------------
 
 project = 'TOMRAP - Hazard Mapping Toolkit'
-copyright = '2020, BGS et al'
-author = 'BGS'
+copyright = '2022, British Geological Survey'
+author = 'British Geological Survey: Annie Winson, Kathrine Leeming, Kay Smith, Declan Valters'
 
 # The full version, including alpha/beta/rc tags
 release = 'https://gitlab.com/BritishGeologicalSurvey'
