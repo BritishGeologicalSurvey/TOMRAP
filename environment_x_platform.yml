@@ -1,0 +1,10 @@
+name: hazmaps
+channels:
+  - defaults
+  - https://nexus-internal.bgs.ac.uk/repository/conda/main
+  - https://nexus-internal.bgs.ac.uk/repository/conda-forge
+dependencies:
+  - python=3.9
+  - geopandas
+  - numpy
+  - ipython
