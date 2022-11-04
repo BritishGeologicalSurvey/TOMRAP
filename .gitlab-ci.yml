@@ -13,7 +13,7 @@ test:
     - conda env create -f environment_linux.yml
     - conda init bash
     - source ~/.bashrc
-    - conda activate hazmap
+    - conda activate hazmaps
     - cd hazardmaps
     - echo $PWD
     - export PYTHONPATH=.
