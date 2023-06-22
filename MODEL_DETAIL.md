@@ -212,20 +212,5 @@ Landslide: 0.333
 
 (Relative Flood vulnerability (please use 1 in 100 for now) \* (VMW:0.333)) + (Relative Earthquake Vulnerability \* (VMW:0.3333)) + (Relative Landslide Vulnerability \* (VMW:0.333))
 
-**= Nepal Multihazard vulnerability.**
-
-**Monte carlo to look at the sensitivity to all weights.**
-
-**Outputs:**
-
-**Single hazard index map**
-
-**Exposure maps per building type -- either number or % per pixel**
-
-**Multihazard risk map**
-
-**Extract multihazard risk per building type**
-
-**After this I would like to experiment with having the weights be defined by an exceedance probability curve, so they would be different for every pixel. We could probably only do this for flood and seismic and would need to somehow 'look up' the value from a collection of vulnerability curves I have as .csv files -- possibly for a smaller area to start, but ideally at national scale eventually. This would mean that the code would need to be able to read the original hazard values and the index values when adding the weighted value, as the weight would be defined by the original value but formulae would need the index value. It might be as well to try this initially with the earthquake (or PGA values), as I already have a collection of curves for the relevant building types for this hazard. It would be interesting to know if there would be a possibility to build in some functionality whereby users could either set expert elicitation weightings or upload the vulnerability curves that they have. I suppose that this would also mean that the users would need to be able to control the number of building types in their model run to match the number of building types that they have.**
 
   [1]: media/image1.png {width="6.268055555555556in" height="3.084722222222222in"}
