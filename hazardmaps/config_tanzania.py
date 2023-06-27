@@ -16,7 +16,7 @@ CUSTOM_VULN_CURVE = True
 # but not Tanzania
 invert_flood_tiff = False
 
-DATADIR = "../datadir/Tanzania/"
+DATADIR = "DATADIR/"
 # The one above is not found in the data folder - DV added on Friday - was in the other folder
 #config.exposure_file = config.DATADIR + "TZA_buildings_exposure_20200731.dbf" #contains location id and positions  - present
 exposure_file = DATADIR + "TZA_buildings_exposure_20200731.dbf" #contains location id and positions  - present
