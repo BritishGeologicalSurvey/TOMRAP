@@ -7,7 +7,7 @@ from osgeo import gdal
 from shapely.geometry import Polygon
 import matplotlib.pyplot as plt
 from matplotlib.testing.decorators import image_comparison
-import config as config
+import hazardmaps.config as config
 
 
 def dbf_to_df(filename):
