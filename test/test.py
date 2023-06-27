@@ -2,9 +2,9 @@ import os
 import pytest
 import numpy as np
 import matplotlib.pyplot as plt
-import hazardmap as hazmap
+from hazardmaps import hazardmap as hazmap
 
-from config import volcfile, volcnames, exposure_file, exposure_breakdown_file, floodratio, floodtypes, eearthquake_file
+from hazardmaps.config import volcfile, volcnames, exposure_file, exposure_breakdown_file, floodratio, floodtypes, eearthquake_file
 
 
 @pytest.mark.mpl_image_compare
