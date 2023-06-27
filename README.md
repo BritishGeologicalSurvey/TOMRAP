@@ -6,8 +6,6 @@ The project builds on outputs from the METEOR project (NEE6423R) to generate a t
 
 This software was developed from a jupyter notebook by (Kathryn Leeming) to take multiple spatial inputs (dbf, tifs) and combine them to create hazard vulternability maps.
 
-Notebook was run from a directory containing copies of the files, original files are on W drive. The original notebooks are now archived in the `notebooks` directory.
-
 
 ## Usage and risks
 
