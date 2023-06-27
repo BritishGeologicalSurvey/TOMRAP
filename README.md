@@ -1,12 +1,10 @@
 # TOMRAP – Tool for Multi-hazard Risk Assessment in Python
 
-A detailed installation and user guide can be found here: http://python.glpages.ad.nerc.ac.uk/hazardmaps/
-
-*Description from the original IFF proposal**
+A detailed installation and user guide can be found here: [TOMRAP User Guide](https://britishgeologicalsurvey.github.io/TOMRAP/)
 
 The project builds on outputs from the METEOR project (NEE6423R) to generate a tool that can be used in future projects to assess multi-hazard risk. The METEOR model was initially developed in ArcGIS. By streamlining this code in Python we will make multi-hazard risk analysis faster and more widely applicable.
 
-This software was developed from a jupyter notebook by @kle (Kathryn Leeming) to take multiple spatial inputs (dbf, tifs) and combine them to create hazard vulternability maps.
+This software was developed from a jupyter notebook by (Kathryn Leeming) to take multiple spatial inputs (dbf, tifs) and combine them to create hazard vulternability maps.
 
 Notebook was run from a directory containing copies of the files, original files are on W drive. The original notebooks are now archived in the `notebooks` directory.
 
