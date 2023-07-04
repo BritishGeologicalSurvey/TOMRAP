@@ -39,33 +39,12 @@ The forces on stars, galaxies,  EXAMPLE
 
 EXAMPLE
 
-`Gala` is an Astropy-affiliated Python package for galactic dynamics. Python
-enables wrapping low-level languages (e.g., C) for speed without losing
-flexibility or ease-of-use in the user-interface. The API for `Gala` was
-designed to provide a class-based and user-friendly interface to fast (C or
-Cython-optimized) implementations of common operations such as gravitational
-potential and force evaluation, orbit integration, dynamical transformations,
-and chaos indicators for nonlinear dynamics. `Gala` also relies heavily on and
-interfaces well with the implementations of physical units and astronomical
-coordinate systems in the `Astropy` package [@astropy] (`astropy.units` and
+`TOMRAP` is a Python package for multihazard risk asessment...
+
+## Subheading
+
+Example of citing the `Astropy` package [@astropy] (`astropy.units` and
 `astropy.coordinates`).
-
-# Mathematics
-
-Single dollars ($) are required for inline mathematics e.g. $f(x) = e^{\pi/x}$
-
-Double dollars make self-standing equations:
-
-$$\Theta(x) = \left\{\begin{array}{l}
-0\textrm{ if } x < 0\cr
-1\textrm{ else}
-\end{array}\right.$$
-
-You can also use plain \LaTeX for equations
-\begin{equation}\label{eq:fourier}
-\hat f(\omega) = \int_{-\infty}^{\infty} f(x) e^{i\omega x} dx
-\end{equation}
-and refer to \autoref{eq:fourier} from text.
 
 # Citations
 
