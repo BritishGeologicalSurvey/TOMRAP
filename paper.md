@@ -33,13 +33,13 @@ aas-journal: Astrophysical Journal <- The name of the AAS journal.
 
 # Summary
 
-The forces on stars, galaxies,  EXAMPLE
+`TOMRAP` is a Python package for multihazard risk asessment...
 
 # Statement of need
 
 EXAMPLE
 
-`TOMRAP` is a Python package for multihazard risk asessment...
+The need for automated, multihazard risk assesment in... 
 
 ## Subheading
 
