@@ -94,48 +94,45 @@ a Creative Commons Attribution 4.0 International License (CC BY
 <body>
 <sec id="summary">
   <title>Summary</title>
-  <p>Multi-hazards are defined as the major multiple hazards that an
-  area might face and the specific context in which they occur, which
-  may be simultaneously, cascadingly, or cumulatively through time
-  (UNDRR, 2017). TOMRAP is an open-source python toolbox capable of
-  generating a compounding / coincident multi-hazard risk assessment at
-  national scale, incorporating any available hazard and exposure data
-  with user defined weighting factors to reflect the changing
-  vulnerability of building stock to various hazards.</p>
-  <p>Globally these individual and interrelated hazards have the
-  potential to result in large socio-economic losses (Tilloy et al.,
-  2019). There are many approaches that have been developed to assess
-  single hazards (e.g. Biass et al., 2016; Connor et al., 2017; Giardini
-  et al., 1999; Lari et al., 2014; Sampson et al., 2015; Schilling,
-  1998; Sheirdan et al., 2005; Strauch et al., 2019 – and many others).
-  These approaches vary, but fundamentally they attempt to quantify the
-  nature, intensity and return period of specific hazards. Each single
-  hazard has a different standardised unit of measurement for magnitude
-  and it is this lack of common standardisation that can make
-  multi-hazard assessments complex (Kappes et al., 2012a). In practice
-  multi-hazard assessments are complicated by the differences between
-  hazard characteristics and therefore the methods used to analyse them
-  and that the impacts on exposure can be different for differing
-  hazards and occasionally opposing (Kappes et al., 2012a).</p>
+  <p>Multihazards are defined as the major multiple hazards that an area
+  might face and the specific context in which they occur, which may be
+  simultaneously, cascadingly, or cumulatively through time (UNDRR,
+  2017). TOMRAP is an open-source python toolbox capable of generating a
+  compounding / coincident multi-hazard risk assessment at national
+  scale, incorporating any available hazard and exposure data with user
+  defined weighting factors to reflect the changing vulnerability of
+  building stock to various hazards.</p>
 </sec>
 <sec id="statement-of-need">
   <title>Statement of need</title>
-  <p>There is a growing body of literature highlighting the need to move
-  from single risk to multihazard risk assessment (for example: Kappes
-  et al., 2012a; Gill and Malamund, 2016; Zschau, 2017; Ciurean et al.,
-  2018; Tilloy et al., 2019; De Angeli et al., 2022; Ward et al., 2022).
-  Past studies have investigated a range of potential methods for
-  modelling these interactions, from purely qualitative to purely
-  quantitative approaches. These include tools such as: Hazard Wheels
-  (Rosendahl Appelquist and Halsnæs, 2015), Hazard Matrices (Gill and
-  Malamund, 2014, Kappes et al., 2012a), Hazard / Risk Indices (Kappes
-  et al., 2012b) and Probabilistic frameworks (Mignan et al., 2014).
-  With more quantitative models requiring increasingly dense inventories
-  of events to support the appropriate level of statistical analysis. As
-  part of the IPP funded METEOR project we developed a framework for
-  modelling multihazard risk, which aggregates hazard, building exposure
-  and vulnerability data to produce a national level semi-quantitative
-  risk assessment. This framework allows the aggregation of various
+  <p>Globally individual and interrelated hazards have the potential to
+  result in large socio-economic losses (Tilloy et al., 2019). There is
+  a growing body of literature highlighting the need to move from single
+  risk to multihazard risk assessment (for example: Kappes et al.,
+  2012a; Gill and Malamund, 2016; Zschau, 2017; Ciurean et al., 2018;
+  Tilloy et al., 2019; De Angeli et al., 2022; Ward et al., 2022). Past
+  studies have investigated a range of potential methods for modelling
+  these interactions, from purely qualitative to purely quantitative
+  approaches. These include tools such as: Hazard Wheels (Rosendahl et
+  al., 2015), Hazard Matrices (Gill and Malamund, 2014, Kappes et al.,
+  2012a), Hazard / Risk Indices (Kappes et al., 2012b) and Probabilistic
+  frameworks (Mignan et al., 2014). With more quantitative models
+  requiring increasingly dense inventories of events to support the
+  appropriate level of statistical analysis. These approaches vary, but
+  fundamentally they attempt to quantify the nature, intensity and
+  return period of specific hazards. Each single hazard has a different
+  standardised unit of measurement for magnitude, and it is this lack of
+  common standardisation that can make multi-hazard assessments complex
+  (Kappes et al., 2012a). In practice multi-hazard assessments are
+  complicated by the differences between hazard characteristics and
+  therefore the methods used to analyse them and that the impacts on
+  exposure can be different for differing hazards and occasionally
+  opposing (Kappes et al., 2012a).</p>
+  <p>As part of the UK Space Agency’s International Partnership Program
+  funded METEOR project, we developed a framework for modelling
+  multihazard risk, which aggregates hazard, building exposure and
+  vulnerability data to produce a national level semi-quantitative risk
+  assessment. This framework allows the aggregation of various
   probabilistic and inventory-based susceptibility and hazard
   assessments (for earthquake, volcano, flood and landslide), with
   satellite derived building exposure data and an assessment of building
@@ -161,15 +158,29 @@ a Creative Commons Attribution 4.0 International License (CC BY
   modelling framework can be seen in
   <xref alt="[fig:Flowchart]" rid="figU003AFlowchart">[fig:Flowchart]</xref>.</p>
   <fig>
-    <caption><p>Flowchart of the procedure to determine hazard map
-    construction.<styled-content id="figU003AFlowchart"></styled-content></p></caption>
+    <caption><p>Generic workflow for the TOMRAP tool. The toolbox
+    aggregates multiple hazard layers with exposure data, that can be
+    weighted over a range of hazard specific vulnerabilities at a pixel
+    scale. This process creates relative vulnerability outputs for each
+    hazard, a weighted sum of these outputs reflects the frequency
+    magnitude distribution of the single hazards and generates a
+    multi-hazard risk product.
+    <styled-content id="figU003AFlowchart"></styled-content></p></caption>
     <graphic mimetype="image" mime-subtype="png" xlink:href="media/Flowchart.png" />
   </fig>
   <p>The hazard map for a particular location, i, is a sum over
   individual hazards and can be defined as such:</p>
-  <p>[EQUATION 1]</p>
+  <p><disp-formula><alternatives>
+  <tex-math><![CDATA[
+  H_i = \sum_{k \in K} \beta_kh_{ki}
+  ]]></tex-math>
+  <mml:math display="block" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:msub><mml:mi>H</mml:mi><mml:mi>i</mml:mi></mml:msub><mml:mo>=</mml:mo><mml:munder><mml:mo>∑</mml:mo><mml:mrow><mml:mi>k</mml:mi><mml:mo>∈</mml:mo><mml:mi>K</mml:mi></mml:mrow></mml:munder><mml:msub><mml:mi>β</mml:mi><mml:mi>k</mml:mi></mml:msub><mml:msub><mml:mi>h</mml:mi><mml:mrow><mml:mi>k</mml:mi><mml:mi>i</mml:mi></mml:mrow></mml:msub></mml:mrow></mml:math></alternatives></disp-formula></p>
   <p>where the map value for each hazard is given by:</p>
-  <p>[EQUATION 2]</p>
+  <p><disp-formula><alternatives>
+  <tex-math><![CDATA[
+  h_ki = \Sigma_{l \in L_k} \alpha_lg_{li} (\Sigma_{m \in M} \gamma_{ml}b_{mi}).
+  ]]></tex-math>
+  <mml:math display="block" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:msub><mml:mi>h</mml:mi><mml:mi>k</mml:mi></mml:msub><mml:mi>i</mml:mi><mml:mo>=</mml:mo><mml:msub><mml:mi>Σ</mml:mi><mml:mrow><mml:mi>l</mml:mi><mml:mo>∈</mml:mo><mml:msub><mml:mi>L</mml:mi><mml:mi>k</mml:mi></mml:msub></mml:mrow></mml:msub><mml:msub><mml:mi>α</mml:mi><mml:mi>l</mml:mi></mml:msub><mml:msub><mml:mi>g</mml:mi><mml:mrow><mml:mi>l</mml:mi><mml:mi>i</mml:mi></mml:mrow></mml:msub><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:msub><mml:mi>Σ</mml:mi><mml:mrow><mml:mi>m</mml:mi><mml:mo>∈</mml:mo><mml:mi>M</mml:mi></mml:mrow></mml:msub><mml:msub><mml:mi>γ</mml:mi><mml:mrow><mml:mi>m</mml:mi><mml:mi>l</mml:mi></mml:mrow></mml:msub><mml:msub><mml:mi>b</mml:mi><mml:mrow><mml:mi>m</mml:mi><mml:mi>i</mml:mi></mml:mrow></mml:msub><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mi>.</mml:mi></mml:mrow></mml:math></alternatives></disp-formula></p>
   <p>Where: <inline-formula><alternatives>
   <tex-math><![CDATA[H_i]]></tex-math>
   <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:msub><mml:mi>H</mml:mi><mml:mi>i</mml:mi></mml:msub></mml:math></alternatives></inline-formula>
@@ -217,12 +228,13 @@ a Creative Commons Attribution 4.0 International License (CC BY
   <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:msub><mml:mi>Σ</mml:mi><mml:mrow><mml:mi>m</mml:mi><mml:mo>∈</mml:mo><mml:mi>M</mml:mi></mml:mrow></mml:msub><mml:msub><mml:mi>b</mml:mi><mml:mrow><mml:mi>m</mml:mi><mml:mi>i</mml:mi></mml:mrow></mml:msub><mml:mo>=</mml:mo><mml:mn>1</mml:mn></mml:mrow></mml:math></alternatives></inline-formula>
   for all locations <italic>i</italic>.</p>
   <fig>
-    <caption><p>Ilustriative diagram of how a supplied vulnerabiltiy
-    curve or curves for a each building type can be used to determine
-    the weighting factor/vulnerability multiplier based on a given
-    hazard intensity. The vulnerability curve data is supplied in csv
-    format.<styled-content id="figU003AVuln_curve"></styled-content></p></caption>
-    <graphic mimetype="image" mime-subtype="png" xlink:href="media/Vuln_curve.png" />
+    <caption><p>Map of multihazrd risk index for the test country of
+    Tanzania. This output combines hazard data for earthquake, flood and
+    volcanic hazard and combines it with building exposure, weighted for
+    hazard specific vulnerabilities. Separate hazards are then weighted
+    together to generate a multihazard risk
+    map.<styled-content id="figU003ATanzania"></styled-content></p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="media/Tanzania.png" />
   </fig>
   <p>The TOMRAP software package is released under an open source
   licence and distributed via GitHub. The interface to the software is
@@ -236,10 +248,12 @@ a Creative Commons Attribution 4.0 International License (CC BY
   are produced from the analysis. (E.g.
   <xref alt="[fig:Tanzania]" rid="figU003ATanzania">[fig:Tanzania]</xref>)</p>
   <fig>
-    <caption><p>Map of multihazrd risk index for Tanzania, combining
-    Earthquake, Flood, and Building Susceptibility
-    Hazards.<styled-content id="figU003ATanzania"></styled-content></p></caption>
-    <graphic mimetype="image" mime-subtype="png" xlink:href="media/Tanzania.png" />
+    <caption><p>Ilustriative diagram of how a supplied vulnerabiltiy
+    curve or curves for a each building type can be used to determine
+    the weighting factor/vulnerability multiplier based on a given
+    hazard intensity. The vulnerability curve data is supplied in csv
+    format.<styled-content id="figU003AVuln_curve"></styled-content></p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="media/Vuln_curve.png" />
   </fig>
   <p>TOMRAP was designed to be used by decision makers and stakeholders
   who are responsible for pre-positioning of resources prior to a
@@ -251,14 +265,85 @@ a Creative Commons Attribution 4.0 International License (CC BY
   compounded by the aggregation of data within the model. It is
   therefore important to bear in mind that any data generated by this
   tool should be assessed for uncertainty. Methodologies for this are
-  outlined in the publications attributed to the METEOR project (ref).
+  outlined in the publications attributed to the METEOR project (Winson
+  et al., 2020) as are all of the data sets created to support it
+  (https://meteor-project.org/ and https://maps.meteor-project.org/).
   Risk products generated by this tool should not be consider absolute
   risk assessments but rather a measure of the relative risk of areas in
-  the context of specific natural hazards.</p>
-  <p>Example of citing the <monospace>Astropy</monospace> package
+  the context of specific natural hazards. (E.g.
+  <xref alt="[fig:Tanzania]" rid="figU003ATanzania">[fig:Tanzania]</xref>)</p>
+</sec>
+<sec id="acknowledgements">
+  <title>Acknowledgements</title>
+  <p>The research leading to the creation of this tool has been
+  supported by: co-funding from the second iteration of the UK Space
+  Agency’s (UKSA) International Partnership Programme (IPP), through the
+  Modelling Exposure Through Earth Observation Routines (METEOR)
+  project, UK National Capability Funding (Innovation Flexible Fund
+  programme / Overseas Disaster Assistance Programme). We would like to
+  thank a number of colleagues for creating the data sets that we used
+  to inform this tool: ImageCat Inc, GEM Foundation (Global Earthquake
+  Model), National Society for Earthquake Technology (NSET), Fathom,
+  Prime Minister’s Office of Tanzania (Policy, Parliament and
+  Coordination); Disaster Management Department, Humanitarian
+  OpenStreetMap Team.</p>
+  <p>EXAMPLE of citing the <monospace>Astropy</monospace> package
   (<xref alt="astropy?" rid="ref-astropy" ref-type="bibr"><bold>astropy?</bold></xref>)
   (<monospace>astropy.units</monospace> and
   <monospace>astropy.coordinates</monospace>).</p>
+  <p>Ciurean, R., Gill, J., Reeves, H. J., O’Grady, S., and Aldridge,
+  T.: Review of environmental multi-hazards research and risk
+  assessments, OR/18/057, British Geological Survey, Nottingham, UK,
+  http://nora.nerc.ac.uk/id/eprint/524399/1/OR18057.pdf (last access: 19
+  July 2023), 2018.</p>
+  <p>De Angeli, S., Malamud, B.D., Rossi, L., Taylor, F.E., Trasforini,
+  E. and Rudari, R., 2022. A multi-hazard framework for spatial-temporal
+  impact analysis. International Journal of Disaster Risk Reduction, 73,
+  p.102829.</p>
+  <p>Gill, J.C. and Malamud, B.D., 2014. Reviewing and visualizing the
+  interactions of natural hazards. Reviews of Geophysics, 52(4),
+  pp.680-722.</p>
+  <p>Gill, J. C. and Malamud, B. D. 2016. Hazard interactions and
+  interaction networks (cascades) within multi-hazard methodologies,
+  Earth Syst. Dynam., 7, 659–679, https://doi.org/10.5194/esd-7-
+  659-2016.</p>
+  <p>Kappes, M.S., Keiler, M., von Elverfeldt, K. and Glade, T., 2012a.
+  Challenges of analyzing multi-hazard risk: a review. Natural hazards,
+  64, pp.1925-1958.</p>
+  <p>Kappes, M.S., Papathoma-Koehle, M. and Keiler, M., 2012b. Assessing
+  physical vulnerability for multi-hazards using an indicator-based
+  methodology. Applied Geography, 32(2), pp.577-590.</p>
+  <p>Mignan, A., Wiemer, S. and Giardini, D., 2014. The quantification
+  of low-probability–high-consequences events: part I. A generic
+  multi-risk approach. Natural Hazards, 73, pp.1999-2022.</p>
+  <p>Rosendahl Appelquist, L. and Halsnæs, K., 2015. The Coastal Hazard
+  Wheel system for coastal multi-hazard assessment &amp; management in a
+  changing climate. Journal of coastal conservation, 19, pp.157-179.</p>
+  <p>Tilloy, A., Malamud, B.D., Winter, H. and Joly-Laugel, A., 2019. A
+  review of quantification methodologies for multi-hazard
+  interrelationships. Earth-Science Reviews, 196, p.102881.</p>
+  <p>UNDRR: Terminology for Disaster Risk Reduction, UNDRR, Geneva,
+  Switzerland, https://www.undrr.org/terminology (last access: 19 July
+  2023), 2017.</p>
+  <p>UNDRR: GAR 2022. Global Assessment Report on Disaster Risk
+  Reduction 2022: Our World at Risk: Transforming Governance for a
+  Resilient Future. United Nations Office for Disaster Risk Reduction,
+  Geneva, Switzerland, https://www.undrr.org/gar2022-our-world-risk-gar
+  (last access: 19 July 2023).</p>
+  <p>Ward, P.J., Daniell, J., Duncan, M., Dunne, A., Hananel, C.,
+  Hochrainer-Stigler, S., Tijssen, A., Torresan, S., Ciurean, R., Gill,
+  J. and Sillmann, J., 2022. Invited perspectives: A research agenda
+  towards disaster risk management pathways in multi-(hazard-) risk
+  assessment. Natural Hazards and Earth System Science, 22(4),
+  pp.1487-1497.</p>
+  <p>Zschau, J.: Where are we with multihazards, multirisks assessment
+  capacities?, in: Science for disaster risk management 2017: knowing
+  better and losing less, edited by: Poljansek, K., Marin Ferrer,
+  M.,</p>
+  <p>De Groeve, T., and Clark, I., European Union, Brussels, Belgium,
+  https://drmkc.jrc.ec.europa.eu/knowledge/
+  science-for-drm/science-for-disaster-risk-management-2017 (last
+  access: 19 July 2023), 2017.</p>
 </sec>
 <sec id="citations">
   <title>Citations</title>
@@ -286,7 +371,7 @@ a Creative Commons Attribution 4.0 International License (CC BY
   parameter: <named-content content-type="image">Caption for example
   figure.</named-content></p>
 </sec>
-<sec id="acknowledgements">
+<sec id="acknowledgements-1">
   <title>Acknowledgements</title>
   <p>We acknowledge contributions from</p>
 </sec>
