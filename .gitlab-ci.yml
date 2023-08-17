@@ -14,10 +14,10 @@ test:
     - conda init bash
     - source ~/.bashrc
     - conda activate hazmaps
-    - cd hazardmaps
+  #  - cd hazardmaps
     - echo $PWD
     - export PYTHONPATH=.
-    - pytest --mpl -vvs test.py
+    - pytest --mpl -vvs test/test.py
 
 pages:
   image: continuumio/miniconda3:4.10.3 
