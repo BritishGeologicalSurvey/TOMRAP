@@ -26,7 +26,7 @@ Python</article-title>
 <contrib-id contrib-id-type="orcid">https://orcid.org/0000-0002-6420-1042</contrib-id>
 <name>
 <surname>Winson</surname>
-<given-names></given-names>
+<given-names>Annie E. G.</given-names>
 </name>
 <xref ref-type="aff" rid="aff-1"/>
 </contrib>
@@ -34,7 +34,7 @@ Python</article-title>
 <contrib-id contrib-id-type="orcid">https://orcid.org/0000-0002-4562-3944</contrib-id>
 <name>
 <surname>Valters</surname>
-<given-names></given-names>
+<given-names>Declan A.</given-names>
 </name>
 <xref ref-type="aff" rid="aff-1"/>
 <xref ref-type="corresp" rid="cor-1"><sup>*</sup></xref>
@@ -43,7 +43,7 @@ Python</article-title>
 <contrib-id contrib-id-type="orcid">https://orcid.org/0000-0003-3287-6974</contrib-id>
 <name>
 <surname>Smith</surname>
-<given-names></given-names>
+<given-names>Kay B.</given-names>
 </name>
 <xref ref-type="aff" rid="aff-1"/>
 </contrib>
@@ -51,22 +51,23 @@ Python</article-title>
 <contrib-id contrib-id-type="orcid">https://orcid.org/0000-0001-9724-2855</contrib-id>
 <name>
 <surname>Leeming</surname>
-<given-names></given-names>
+<given-names>Kathryn A.</given-names>
 </name>
 <xref ref-type="aff" rid="aff-1"/>
 </contrib>
 <aff id="aff-1">
 <institution-wrap>
-<institution>British Geological Survey, United Kingdom</institution>
+<institution>British Geological Survey, Keyworth, Nottingham, NG12 5GG,
+United Kingdom</institution>
 </institution-wrap>
 </aff>
 </contrib-group>
 <author-notes>
 <corresp id="cor-1">* E-mail: <email></email></corresp>
 </author-notes>
-<pub-date date-type="pub" publication-format="electronic" iso-8601-date="2023-07-04">
-<day>4</day>
-<month>7</month>
+<pub-date date-type="pub" publication-format="electronic" iso-8601-date="2023-08-15">
+<day>15</day>
+<month>8</month>
 <year>2023</year>
 </pub-date>
 <volume>¿VOL?</volume>
@@ -98,11 +99,13 @@ a Creative Commons Attribution 4.0 International License (CC BY
   might face and the specific context in which they occur, which may be
   simultaneously, cascadingly, or cumulatively through time
   (<xref alt="UNDRR, 2017" rid="ref-undrr17" ref-type="bibr">UNDRR,
-  2017</xref>). TOMRAP is an open-source python toolbox capable of
-  generating a compounding / coincident multi-hazard risk assessment at
-  national scale, incorporating any available hazard and exposure data
-  with user defined weighting factors to reflect the changing
-  vulnerability of building stock to various hazards.</p>
+  2017</xref>,
+  <xref alt="2022" rid="ref-undrr22" ref-type="bibr">2022</xref>).
+  TOMRAP is an open-source python toolbox capable of generating a
+  compounding / coincident multi-hazard risk assessment at national
+  scale, incorporating any available hazard and exposure data with user
+  defined weighting factors to reflect the changing vulnerability of
+  building stock to various hazards.</p>
 </sec>
 <sec id="statement-of-need">
   <title>Statement of need</title>
@@ -156,19 +159,18 @@ a Creative Commons Attribution 4.0 International License (CC BY
   (<xref alt="Kappes, Keiler, et al., 2012" rid="ref-kkvg12" ref-type="bibr">Kappes,
   Keiler, et al., 2012</xref>).</p>
   <p>As part of METEOR project, funded through the UK Space Agency’s
-  International Partnership Program funded METEOR project, we developed
-  a framework for modelling multihazard risk, which aggregates hazard,
-  building exposure and vulnerability data to produce a national level
-  semi-quantitative risk assessment. This framework allows the
-  aggregation of various probabilistic and inventory-based
-  susceptibility and hazard assessments (developed for earthquake,
-  volcano, flood and landslide), with satellite derived building
-  exposure data and an assessment of building vulnerability, defined
-  either by the input of fragility failure curves or through expertly
-  elicited weighting factors. This methodology can therefore be adapted
-  dependant on what data is available to the end users and can be pushed
-  to either a more qualitative or more quantitative output, as the data
-  supports.</p>
+  International Partnership Program, we developed a framework for
+  modelling multihazard risk, which aggregates hazard, building exposure
+  and vulnerability data to produce a national level semi-quantitative
+  risk assessment. This framework allows the aggregation of various
+  probabilistic and inventory-based susceptibility and hazard
+  assessments (developed for earthquake, volcano, flood and landslide),
+  with satellite derived building exposure data and an assessment of
+  building vulnerability, defined either by the input of fragility
+  failure curves or through expertly elicited weighting factors. This
+  methodology can therefore be adapted dependant on what data is
+  available to the end users and can be pushed to either a more
+  qualitative or more quantitative output, as the data supports.</p>
 </sec>
 <sec id="modelling-multihazard-risk">
   <title>Modelling Multihazard Risk</title>
@@ -206,9 +208,9 @@ a Creative Commons Attribution 4.0 International License (CC BY
   <p>where the map value for each hazard is given by:</p>
   <p><disp-formula><alternatives>
   <tex-math><![CDATA[
-  h_ki = \Sigma_{l \in L_k} \alpha_lg_{li} (\Sigma_{m \in M} \gamma_{ml}b_{mi}).
+  h_{ki} = \Sigma_{l \in L_k} \alpha_lg_{li} (\Sigma_{m \in M} \gamma_{ml}b_{mi}).
   ]]></tex-math>
-  <mml:math display="block" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:msub><mml:mi>h</mml:mi><mml:mi>k</mml:mi></mml:msub><mml:mi>i</mml:mi><mml:mo>=</mml:mo><mml:msub><mml:mi>Σ</mml:mi><mml:mrow><mml:mi>l</mml:mi><mml:mo>∈</mml:mo><mml:msub><mml:mi>L</mml:mi><mml:mi>k</mml:mi></mml:msub></mml:mrow></mml:msub><mml:msub><mml:mi>α</mml:mi><mml:mi>l</mml:mi></mml:msub><mml:msub><mml:mi>g</mml:mi><mml:mrow><mml:mi>l</mml:mi><mml:mi>i</mml:mi></mml:mrow></mml:msub><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:msub><mml:mi>Σ</mml:mi><mml:mrow><mml:mi>m</mml:mi><mml:mo>∈</mml:mo><mml:mi>M</mml:mi></mml:mrow></mml:msub><mml:msub><mml:mi>γ</mml:mi><mml:mrow><mml:mi>m</mml:mi><mml:mi>l</mml:mi></mml:mrow></mml:msub><mml:msub><mml:mi>b</mml:mi><mml:mrow><mml:mi>m</mml:mi><mml:mi>i</mml:mi></mml:mrow></mml:msub><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mi>.</mml:mi></mml:mrow></mml:math></alternatives></disp-formula></p>
+  <mml:math display="block" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:msub><mml:mi>h</mml:mi><mml:mrow><mml:mi>k</mml:mi><mml:mi>i</mml:mi></mml:mrow></mml:msub><mml:mo>=</mml:mo><mml:msub><mml:mi>Σ</mml:mi><mml:mrow><mml:mi>l</mml:mi><mml:mo>∈</mml:mo><mml:msub><mml:mi>L</mml:mi><mml:mi>k</mml:mi></mml:msub></mml:mrow></mml:msub><mml:msub><mml:mi>α</mml:mi><mml:mi>l</mml:mi></mml:msub><mml:msub><mml:mi>g</mml:mi><mml:mrow><mml:mi>l</mml:mi><mml:mi>i</mml:mi></mml:mrow></mml:msub><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:msub><mml:mi>Σ</mml:mi><mml:mrow><mml:mi>m</mml:mi><mml:mo>∈</mml:mo><mml:mi>M</mml:mi></mml:mrow></mml:msub><mml:msub><mml:mi>γ</mml:mi><mml:mrow><mml:mi>m</mml:mi><mml:mi>l</mml:mi></mml:mrow></mml:msub><mml:msub><mml:mi>b</mml:mi><mml:mrow><mml:mi>m</mml:mi><mml:mi>i</mml:mi></mml:mrow></mml:msub><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mi>.</mml:mi></mml:mrow></mml:math></alternatives></disp-formula></p>
   <p>Where: <inline-formula><alternatives>
   <tex-math><![CDATA[H_i]]></tex-math>
   <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:msub><mml:mi>H</mml:mi><mml:mi>i</mml:mi></mml:msub></mml:math></alternatives></inline-formula>
@@ -276,11 +278,10 @@ a Creative Commons Attribution 4.0 International License (CC BY
   are produced from the analysis. (E.g.
   <xref alt="[fig:Tanzania]" rid="figU003ATanzania">[fig:Tanzania]</xref>)</p>
   <fig>
-    <caption><p>Illustrative diagram of how a supplied vulnerabiltiy
-    vulnerability curve or curves for a each building type can be used
-    to determine the weighting factor/vulnerability multiplier based on
-    a given hazard intensity. The vulnerability curve data is supplied
-    in csv
+    <caption><p>Illustrative diagram of how a supplied vulnerability
+    curve or curves for a each building type can be used to determine
+    the weighting factor/vulnerability multiplier based on a given
+    hazard intensity. The vulnerability curve data is supplied in csv
     format.<styled-content id="figU003AVuln_curve"></styled-content></p></caption>
     <graphic mimetype="image" mime-subtype="png" xlink:href="media/Vuln_curve.png" />
   </fig>
@@ -475,6 +476,20 @@ a Creative Commons Attribution 4.0 International License (CC BY
       <lpage></lpage>
     </element-citation>
   </ref>
+  <ref id="ref-undrr22">
+    <element-citation publication-type="article-journal">
+      <person-group person-group-type="author">
+        <name><surname>UNDRR</surname></name>
+      </person-group>
+      <article-title>Global assessment report on disaster risk reduction 2022: Our world at risk: Transforming governance for a resilient future</article-title>
+      <source>United Nations Office for Disaster Risk Reduction, Geneva, Switzerland</source>
+      <year iso-8601-date="2022">2022</year>
+      <volume>19</volume>
+      <uri>https://www.undrr.org/gar2022-our-world-risk-gar</uri>
+      <fpage>2023</fpage>
+      <lpage></lpage>
+    </element-citation>
+  </ref>
   <ref id="ref-wdddhhttcgs22">
     <element-citation publication-type="article-journal">
       <person-group person-group-type="author">
@@ -508,18 +523,20 @@ a Creative Commons Attribution 4.0 International License (CC BY
         <name><surname>Smith</surname><given-names>K. B.</given-names></name>
       </person-group>
       <article-title>METEOR : Methods for analysing multi-hazards with exposure</article-title>
-      <publisher-name>Report M6.2/P. Nottingham, UK, British Geological Survey, 52pp. (OR/20/074) (Unpublished). J.: Where are we with multihazards, multirisks assessment capacities?, in: Science for disaster risk management 2017: knowing better; losing less, edited by: Poljansek, K., Marin Ferrer, M., De Groeve, T.,; Clark, I., European Union, Brussels, Belgium, https://drmkc.jrc.ec.europa.eu/knowledge/ science-for-drm/science-for-disaster-risk-management-2017 (last access: 19 July 2023), 2017</publisher-name>
+      <publisher-name>Report M6.2/P. Nottingham, UK, British Geological Survey, 52pp. (OR/20/074) (Unpublished). https://nora.nerc.ac.uk/id/eprint/535120</publisher-name>
       <year iso-8601-date="2020">2020</year>
-      <uri>https://nora.nerc.ac.uk/id/eprint/535120/Zschau</uri>
+      <uri>https://nora.nerc.ac.uk/id/eprint/535120/</uri>
     </element-citation>
   </ref>
   <ref id="ref-zschau2017">
-    <element-citation publication-type="article-journal">
+    <element-citation publication-type="report">
       <person-group person-group-type="author">
         <name><surname>Zschau</surname><given-names>Jochen</given-names></name>
       </person-group>
-      <article-title>Where are we with multihazards, multirisks assessment capacities? In: Science for disaster risk management 2017: Knowing better and losing less, edited by: Poljansek, k., marin ferrer, m., de groeve, t., and clark, i., european union, brussels, belgium, https://drmkc.jrc.ec.europa.eu/knowledge/ science-for-drm/science-for-disaster-risk-management-2017 (last access: 19 july 2023), 2017.</article-title>
+      <article-title>Where are we with multihazards, multirisks assessment capacities?</article-title>
+      <publisher-name>in: Science for disaster risk management 2017: knowing better; losing less, edited by: Poljansek, K., Marin Ferrer, M., De Groeve, T.,; Clark, I., European Union, Brussels, Belgium</publisher-name>
       <year iso-8601-date="2017">2017</year>
+      <uri>https://drmkc.jrc.ec.europa.eu/knowledge/ science-for-drm/science-for-disaster-risk-management-2017</uri>
     </element-citation>
   </ref>
 </ref-list>
