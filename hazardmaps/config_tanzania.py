@@ -17,7 +17,6 @@ CUSTOM_VULN_CURVE = True
 invert_flood_tiff = False
 
 DATADIR = "DATADIR/"
-# The one above is not found in the data folder - DV added on Friday - was in the other folder
 #config.exposure_file = config.DATADIR + "TZA_buildings_exposure_20200731.dbf" #contains location id and positions  - present
 exposure_file = DATADIR + "TZA_buildings_exposure_20200731.dbf" #contains location id and positions  - present
 exposure_breakdown_file = DATADIR + "TZA_buildings_exposure_breakdown_20200731.dbf" 
