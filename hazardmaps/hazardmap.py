@@ -1,5 +1,6 @@
 # hazardmap.py
-# This script takes different shape inputs and combines them to create a hazard vulnerability map.
+# This script takes different shape inputs and combines them to create a hazard vulnerability map
+import logging
 import geopandas as gpd
 import pandas as pd
 import numpy as np
@@ -8,6 +9,9 @@ from shapely.geometry import Polygon
 import matplotlib.pyplot as plt
 from matplotlib.testing.decorators import image_comparison
 import hazardmaps.config as config
+
+
+logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
 
 def dbf_to_df(filename):
@@ -368,28 +372,41 @@ def main():
     These all have side effects on the geodataframe passed in - eventually we might 
     want to refactor this to be a class with data members etc,
     """
+    logging.info("WELCOME TO TOMRAP: Toolbox for Multihazard Risk Assessment in Python")
     if config.VOLCANIC:
+        logging.info("Reading volcanic hazard inputs...")
         volcano_lahar, volcano_pyro = read_volcano_data(config.volcfile, config.volcnames)
+        logging.info("SUCCESS: Reading volcanic hazard inputs")
+        
+    logging.info("Extracting building geometry and exposure database...")
     tz, tz_withgeometry = buildings(config.exposure_file, config.exposure_breakdown_file)  # tz needs a rename...
+    logging.info("SUCCESS: Extracting building geometry and exposure database.")
     
     # Calculate earthquake data (couldn't this go above to be more logical?)
     # as above - but this one only generates earthquake data
     # if config.SEISMIC:
+    logging.info("Reading Earthquake (Seismic) data...")
     tz_earthquakes = earthquake_data(config.eearthquake_file)  # as above - but this one only generates earthquake data
     # Add flood data to the buildings
     # returns tz_withgeometry again!
+    logging.info("Combining flood and building geometry data...")
     tz_withgeometry_withflood = flood_data(config.floodratio, config.floodtypes, tz, tz_withgeometry)   # returns tz_withgeometry again!
     # Add volcano data to the buildingss+flood
     # as above - flood_data is the tz_geometry
     if config.VOLCANIC:
+        logging.info("Combining volcanic and building geometry data...")
         tz_withgeometry_withflood_withvolcano = combine_volcano_buildings(tz_withgeometry_withflood, volcano_lahar, volcano_pyro)   # as above - flood_data is the tz_geometry
     else:
         tz_withgeometry_withflood_withvolcano = tz_withgeometry_withflood   # 
     # Add earthquae data to the buildings+flood+volcano data
+    logging.info("Combining all data to map")
     combined_data = hazards_combined(tz_earthquakes, tz_withgeometry_withflood_withvolcano)
 
+    logging.info("Plotting histograms")
     plot_histograms(combined_data)   # - this should not have side effects on the combined_data gpd
+    logging.info("Plotting maps")
     plot_maps(config.plot_types, config.figure_prefix, combined_data)   # same as above - no side effects please!
+    loggig.info("FINISHED.")
 
 
 if __name__=="__main__":
