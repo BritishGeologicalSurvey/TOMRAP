@@ -15,6 +15,7 @@ logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
 
 def dbf_to_df(filename):
+    logging.info("LOADING FILE %s", filename)
     return pd.DataFrame(gpd.read_file(filename))
     
 
@@ -119,11 +120,13 @@ def buildings(exposure_file, exposure_breakdown_file):
     """
     Load the building data and convert to have geometry
     """
+    logging.info("Getting breakdown file from DBF...")
     tz_buildings = getbreakdown(config.exposure_breakdown_file)
+    logging.info("Loading full Building Exposire File (This may take a while....)")
     tz_withgeometry = dbf_to_df(config.exposure_file)
 
     if config.CUSTOM_VULN_CURVE:
-        print("Reading vulnerabiltiy curve...")
+        logging.info("Reading vulnerabiltiy curve...")
         vuln_file = config.DATADIR + config.vuln_curve_file
         vuln_table = pd.read_csv(vuln_file, index_col=0)
 
