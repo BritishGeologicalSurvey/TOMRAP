@@ -2,7 +2,7 @@
 # Tanzania
 
 SEISMIC = True
-FLOODING = True 
+FLOODING = False 
 VOLCANIC = True
 LANDSLIDE = False
 EXPOSURE = True
@@ -12,13 +12,13 @@ CUSTOM_VULN_CURVE = True
 
 # This is a bit of a workaround if your flood data
 # triggers an index error, this can be due to swapping the
-# x and y coordinates. The Nepa data requires this to be true 
+# x and y coordinates. The Nepal data requires this to be true 
 # but not Tanzania
-invert_flood_tiff = False
+invert_flood_tiff = True
 
 DATADIR = "DATADIR/"
 #config.exposure_file = config.DATADIR + "TZA_buildings_exposure_20200731.dbf" #contains location id and positions  - present
-exposure_file = DATADIR + "TZA_buildings_exposure_20200731.dbf" #contains location id and positions  - present
+exposure_file = DATADIR + "TZA_buildings_exposure_20200731_dodoma.dbf" #contains location id and positions  - present
 exposure_breakdown_file = DATADIR + "TZA_buildings_exposure_breakdown_20200731.dbf" 
 #contains location id and breakdown of number of each house type
 #volcP = ["kyejo", "meru"]

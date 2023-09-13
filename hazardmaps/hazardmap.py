@@ -393,7 +393,7 @@ def main():
     # Add flood data to the buildings
     # returns tz_withgeometry again!
     logging.info("Combining flood and building geometry data...")
-    tz_withgeometry_withflood = flood_data(config.floodratio, config.floodtypes, tz, tz_withgeometry)   # returns tz_withgeometry again!
+    tz_withgeometry_withflood = flood_data(config.floodratio, config.floodtypes, tz, tz_withgeometry)  
     # Add volcano data to the buildingss+flood
     # as above - flood_data is the tz_geometry
     if config.VOLCANIC:
@@ -409,7 +409,7 @@ def main():
     plot_histograms(combined_data)   # - this should not have side effects on the combined_data gpd
     logging.info("Plotting maps")
     plot_maps(config.plot_types, config.figure_prefix, combined_data)   # same as above - no side effects please!
-    loggig.info("FINISHED.")
+    logging.info("FINISHED.")
 
 
 if __name__=="__main__":
