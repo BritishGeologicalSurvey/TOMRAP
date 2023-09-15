@@ -30,7 +30,7 @@ volcnames = ["Lengai, Ol Doinyo", "Meru", "Ngozi", "Rungwe", "Kyejo"] #names of 
 floodratio = 100 # selects from different flood tifs
 floodtypes = ["FD", "FU", "P"]  #selects from different flood tifs
 # in the Seismic folder
-eearthquake_file = DATADIR + "hazard_map_mean_tanzania.dbf" #contains earthquake information
+earthquake_file = DATADIR + "hazard_map_mean_tanzania.dbf" #contains earthquake information
 
 figure_prefix = "output_"
 #plot_types = ["ear", "plu", "flu", "tep", "lahar", "pgaindx", "P", "FU", "lah", "pyr", "equ", "flood", "volc", "hmap"]

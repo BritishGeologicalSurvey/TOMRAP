@@ -4,9 +4,10 @@ import logging
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.testing.decorators import image_comparison
 
 from hazardmaps import hazardmap as hazmap
-from hazardmaps.config import volcfile, volcnames, exposure_file, exposure_breakdown_file, floodratio, floodtypes, eearthquake_file
+from hazardmaps.config import volcfile, volcnames, exposure_file, exposure_breakdown_file, floodratio, floodtypes, earthquake_file
 
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 
@@ -45,7 +46,7 @@ def test_hazard_map_regression():
     tz, tz_withgeometry = hazmap.buildings(exposure_file, exposure_breakdown_file)
     tz_withgeometry_withflood = hazmap.flood_data(floodratio, floodtypes, tz, tz_withgeometry)
     tz_withgeometry_withflood_withvolcano = hazmap.combine_volcano_buildings(tz_withgeometry_withflood, volcano_lahar, volcano_pyro)
-    tz_earthquakes = hazmap.earthquake_data(eearthquake_file)  
+    tz_earthquakes = hazmap.earthquake_data(earthquake_file)  
     combined_data = hazmap.hazards_combined(tz_earthquakes, tz_withgeometry_withflood_withvolcano)
     np.sum(np.isnan(combined_data.volc))
 
