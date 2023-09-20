@@ -1,5 +1,5 @@
 # CONFIG FILE
-# Tanzania
+# Tanzania Subset (Dodoma) Example
 
 SEISMIC = True
 FLOODING = False 
@@ -10,17 +10,17 @@ EXPOSURE = True
 # Read in vuln curves
 CUSTOM_VULN_CURVE = True
 
-# This is a bit of a workaround if your flood data
-# triggers an index error, this can be due to swapping the
-# x and y coordinates. The Nepal data requires this to be true 
-# but not Tanzania
+# If your flood input rasters trigger an index error, it is usually 
+# because your GIS program has reversed the x and y coordinates. Setting this
+# option to True usually fixes the issue. 
 invert_flood_tiff = True
 
 DATADIR = "DATADIR/"
-#config.exposure_file = config.DATADIR + "TZA_buildings_exposure_20200731.dbf" #contains location id and positions  - present
-exposure_file = DATADIR + "TZA_buildings_exposure_20200731_dodoma.dbf" #contains location id and positions  - present
+#contains location id and positions  - present
+exposure_file = DATADIR + "TZA_buildings_exposure_20200731_dodoma.dbf" 
+# contains location id and breakdown of number of each house type
 exposure_breakdown_file = DATADIR + "TZA_buildings_exposure_breakdown_20200731.dbf" 
-#contains location id and breakdown of number of each house type
+
 #volcP = ["kyejo", "meru"]
 #volcL = ["lengai", "ngozi", "rungwe"]
 volcfile = DATADIR + "World_Volcanoes_Smithsonian_Institution_GVP.shp" #point locations of volcanoes
@@ -58,11 +58,8 @@ building_type_tz = ['CR/LFM/HBET:1,3',
                     'MUR+STRUB',
                      'W+WWD']
 
-# Numbers could be no. of floors
-# Could be made more general. Could be different in UK for e.g.
-# Building type weightings
 
-# Do we ned these multiplications of doing custom vuln curves? Check...
+# Building weights. These aligm to the columns in your building exposure breakdown database/DBF file.
 tz_weight_pluvial = [0.32, 0.2, 0.12, 0.4, 0.25, 0.15, 0.09, 0.4, 0.25, 0.8, 0.56, 0.56, 0.56, 0.56, 0.56]
 tz_weight_fluvial = tz_weight_pluvial
 tz_weight_tephra = [0.3, 0.15, 0.09, 0.4, 0.2, 0.12, 0.09, 0.5, 0.25, 0.2, 0.6, 0.6, 0.6, 0.6, 0.6]
